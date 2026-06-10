@@ -818,7 +818,10 @@ function selectTipo(tipo) {
     }
   }
 
-  setTimeout(() => document.getElementById('input-qty').select(), 50);
+  setTimeout(() => {
+    if (tipo === 'unidades') document.getElementById('input-fecha').focus();
+    else document.getElementById('input-qty').select();
+  }, 50);
 }
 
 function selectRotura(sub, save=true) {
