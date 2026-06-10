@@ -47,7 +47,9 @@
       background: var(--bg);
       display: flex; align-items: center; justify-content: center;
       padding: 20px;
+      transition: opacity .35s ease;
     }
+    #setup-overlay.fade-out { opacity: 0; pointer-events: none; }
     .setup-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -65,11 +67,60 @@
     }
     .setup-logo h2 { font-size: 20px; font-weight: 800; }
     .setup-card p { color: var(--muted); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+
+    /* ── PREMIUM PROGRESS BAR ── */
+    .setup-progress-wrap { margin-bottom: 20px; }
+    .setup-progress-track {
+      height: 4px; background: var(--card); border-radius: 99px;
+      overflow: hidden; margin-bottom: 14px;
+      box-shadow: 0 0 0 1px var(--border);
+    }
+    .setup-progress-fill {
+      height: 100%; width: 0%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+      background-size: 200% 100%;
+      animation: progressShimmer 1.5s linear infinite;
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes progressShimmer {
+      0%   { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+    .setup-steps { display: flex; flex-direction: column; gap: 8px; }
+    .setup-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 500; color: var(--muted);
+      transition: color .3s, opacity .3s;
+      opacity: .45;
+    }
+    .setup-step.active { color: var(--text); opacity: 1; }
+    .setup-step.done   { color: var(--success); opacity: 1; }
+    .setup-step.fail   { color: var(--danger); opacity: 1; }
+    .step-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border); flex-shrink: 0;
+      transition: background .3s, box-shadow .3s;
+    }
+    .setup-step.active .step-dot {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47,129,247,.2);
+      animation: pulseDot 1.2s ease-in-out infinite;
+    }
+    .setup-step.done .step-dot   { background: var(--success); box-shadow: none; }
+    .setup-step.fail .step-dot   { background: var(--danger);  box-shadow: none; }
+    @keyframes pulseDot {
+      0%,100% { box-shadow: 0 0 0 3px rgba(47,129,247,.2); }
+      50%      { box-shadow: 0 0 0 5px rgba(47,129,247,.05); }
+    }
+    .step-icon { font-size: 11px; margin-left: auto; }
+
+    /* Legacy load-row (keep hidden fallback compatibility) */
     .load-row {
       display: flex; align-items: center; gap: 10px;
       background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; padding: 11px 14px; margin-bottom: 8px;
       font-size: 13px; font-weight: 600; transition: border-color .2s;
+      display: none;
     }
     .load-row.ok   { border-color: var(--success); }
     .load-row.fail { border-color: var(--danger); }
@@ -191,12 +242,15 @@
     .product-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 10px 13px; display: none;
-      transition: background .25s, border-color .25s;
+      opacity: 0;
+      transition: background .25s, border-color .25s, opacity .2s;
     }
     .product-card.visible { display: block; }
+    .product-card.visible.fade-in { opacity: 1; }
     .product-card.found   { background: rgba(63,185,80,.10); border-color: var(--success); }
     .product-card.not-found { border-color: var(--danger); }
-    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 3px; }
+    .pc-ref  { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
     .pc-codes { display: flex; gap: 6px; flex-wrap: wrap; }
     .pc-code-item {
       font-size: 11px; font-weight: 600; color: var(--muted);
@@ -206,25 +260,10 @@
     .pc-code-item span { color: var(--text); font-weight: 700; margin-left: 3px; }
     .pc-err { font-size: 12px; color: var(--danger); font-weight: 600; }
 
-    /* ── SKELETON ── */
-    @keyframes shimmer {
-      0%   { background-position: -400px 0; }
-      100% { background-position:  400px 0; }
-    }
+    /* ── SKELETON / FADE BUTTONS ── */
     @keyframes popIn {
-      from { opacity: 0; transform: scale(0.88) translateY(4px); }
+      from { opacity: 0; transform: scale(0.92) translateY(3px); }
       to   { opacity: 1; transform: scale(1)    translateY(0); }
-    }
-    .btn-action.skeleton {
-      background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
-      background-size: 400px 100%;
-      animation: shimmer 1.4s infinite linear;
-      color: transparent !important;
-      border-color: transparent !important;
-      cursor: default; pointer-events: none;
-    }
-    .btn-action.pop-in {
-      animation: popIn .3s cubic-bezier(.34,1.56,.64,1) forwards;
     }
 
     /* ── ACTION BUTTONS ── */
@@ -236,13 +275,18 @@
       font-size: 12px; font-weight: 700; cursor: pointer;
       background: var(--card); color: var(--muted);
       transition: all .15s; text-align: center;
+      opacity: 0; pointer-events: none;
+    }
+    .btn-action.ready {
+      pointer-events: auto;
+      animation: popIn .22s cubic-bezier(.34,1.4,.64,1) forwards;
     }
     .btn-action:hover:not(:disabled) { border-color: var(--border); color: var(--text); }
     .btn-action.active.unidades { background: rgba(59,130,246,.15); border-color: #3b82f6; color: #93c5fd; }
     .btn-action.active.rotura   { background: rgba(248,81,73,.15);  border-color: var(--danger); color: #fca5a5; }
     .btn-action.active.vencido  { background: rgba(210,153,34,.15); border-color: var(--warn);   color: #fcd34d; }
     .btn-action.active.otro     { background: rgba(125,133,144,.15);border-color: var(--muted);  color: var(--text); }
-    .btn-action:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-action:disabled { cursor: not-allowed; }
 
     /* ── SETTINGS PANEL ── */
     .settings-backdrop {
@@ -348,7 +392,8 @@
     .stripe-vencido  { background: var(--warn); }
     .stripe-otro     { background: var(--muted); }
     .entry-body { flex: 1; min-width: 0; }
-    .entry-code { font-size: 13px; font-weight: 700; }
+    .entry-code { font-size: 13px; font-weight: 700; color: var(--text); }
+    .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; }
     .entry-desc { font-size: 11px; color: var(--muted); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
     .e-chip {
@@ -471,8 +516,28 @@
       <div class="dot">M</div>
       <h2>Mapeo</h2>
     </div>
-    <p id="setup-msg">Cargando archivos de base de datos…</p>
+    <p id="setup-msg">Inicializando sistema…</p>
 
+    <!-- Premium progress bar -->
+    <div class="setup-progress-wrap">
+      <div class="setup-progress-track">
+        <div class="setup-progress-fill" id="setup-progress-fill"></div>
+      </div>
+      <div class="setup-steps">
+        <div class="setup-step active" id="step-vl">
+          <span class="step-dot"></span>
+          <span class="step-label">Cargando variables logísticas…</span>
+          <span class="step-icon" id="step-vl-icon"></span>
+        </div>
+        <div class="setup-step" id="step-ref">
+          <span class="step-dot"></span>
+          <span class="step-label">Cargando referencias…</span>
+          <span class="step-icon" id="step-ref-icon"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden legacy rows for compat -->
     <div class="load-row" id="load-vl">
       <span class="load-icon">·</span>
       <span class="load-label">variables.xlsx</span>
@@ -514,7 +579,6 @@
     <h1>Mapeo</h1>
   </div>
   <div class="header-right">
-    <span class="badge" id="header-count">0</span>
     <button class="btn-icon" onclick="exportXLSX()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M8 2v8M5 7l3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/>
@@ -522,9 +586,17 @@
       Exportar
     </button>
     <button class="btn-icon" id="btn-settings" onclick="toggleSettings()">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="8" cy="8" r="2.2"/>
-        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42"/>
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+        <path d="M17.2 10c0-.34-.03-.68-.08-1.01l2.17-1.7a.52.52 0 0 0 .12-.65l-2.05-3.55a.51.51 0 0 0-.63-.23l-2.56 1.03a7.5 7.5 0 0 0-1.74-1l-.38-2.72A.5.5 0 0 0 11.5 0h-3a.5.5 0 0 0-.5.42L7.62 3.14a7.5 7.5 0 0 0-1.74 1L3.32 3.11a.51.51 0 0 0-.63.23L.64 6.9a.5.5 0 0 0 .12.64L2.93 9.2A7.42 7.42 0 0 0 2.85 10c0 .34.03.68.08 1.01L.76 12.71a.52.52 0 0 0-.12.65l2.05 3.55c.13.23.4.32.63.23l2.56-1.03c.54.38 1.13.7 1.74 1l.38 2.72a.5.5 0 0 0 .5.42h3a.5.5 0 0 0 .5-.42l.38-2.72a7.5 7.5 0 0 0 1.74-1l2.56 1.03c.23.09.5 0 .63-.23l2.05-3.55a.5.5 0 0 0-.12-.64L17.12 11c.05-.33.08-.66.08-1Z" stroke-width="1.4"/>
+      </svg>
+    </button>
+    <button class="btn-icon" id="btn-fullscreen" onclick="toggleFullscreen()" title="Pantalla completa">
+      <svg id="fs-icon-enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"/>
+      </svg>
+      <svg id="fs-icon-exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none">
+        <path d="M6 1v5H1M10 1v5h5M15 10h-5v5M6 15v-5H1"/>
       </svg>
     </button>
   </div>
@@ -556,10 +628,10 @@
   <!-- ACTIONS -->
   <div id="action-panel">
     <div class="action-row">
-      <button class="btn-action skeleton" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
-      <button class="btn-action skeleton" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
-      <button class="btn-action skeleton" id="btn-vencido"  onclick="selectTipo('vencido')"  disabled>Vencido</button>
-      <button class="btn-action skeleton" id="btn-otro"     onclick="selectTipo('otro')"     disabled>Otro</button>
+      <button class="btn-action" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
+      <button class="btn-action" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
+      <button class="btn-action" id="btn-vencido"  onclick="selectTipo('vencido')"  disabled>Vencido</button>
+      <button class="btn-action" id="btn-otro"     onclick="selectTipo('otro')"     disabled>Otro</button>
     </div>
 
     <!-- Fecha vencimiento (unidades) -->
@@ -689,30 +761,60 @@ function setLoadRow(id, state, label) {
   row.querySelector('.load-label').textContent = label;
 }
 
+function setStepState(id, iconId, state) {
+  const step = document.getElementById(id);
+  const icon = document.getElementById(iconId);
+  if (!step) return;
+  step.className = 'setup-step ' + state;
+  if (icon) icon.textContent = state === 'done' ? '✓' : state === 'fail' ? '✕' : '';
+}
+
+function setProgressFill(pct) {
+  const bar = document.getElementById('setup-progress-fill');
+  if (bar) bar.style.width = pct + '%';
+}
+
 async function autoLoad() {
   let vlOk = false, refOk = false;
+
+  // Paso 1: variables
+  setStepState('step-vl', 'step-vl-icon', 'active');
+  setProgressFill(10);
   try {
     vlData = await fetchXLSX('variables.xlsx');
     setLoadRow('load-vl', 'ok', `variables.xlsx — ${vlData.length} registros`);
+    setStepState('step-vl', 'step-vl-icon', 'done');
+    setProgressFill(50);
     vlOk = true;
   } catch(e) {
     setLoadRow('load-vl', 'fail', 'variables.xlsx — no encontrado');
+    setStepState('step-vl', 'step-vl-icon', 'fail');
+    setProgressFill(50);
   }
+
+  // Paso 2: referencias
+  setStepState('step-ref', 'step-ref-icon', 'active');
   try {
     refData = await fetchXLSX('referencia.xlsx');
     setLoadRow('load-ref', 'ok', `referencia.xlsx — ${refData.length} registros`);
+    setStepState('step-ref', 'step-ref-icon', 'done');
+    setProgressFill(100);
     refOk = true;
   } catch(e) {
     setLoadRow('load-ref', 'fail', 'referencia.xlsx — no encontrado');
+    setStepState('step-ref', 'step-ref-icon', 'fail');
+    setProgressFill(100);
   }
 
   if (vlOk && refOk) {
     document.getElementById('setup-msg').textContent = 'Listo.';
     setTimeout(() => {
-      document.getElementById('setup-overlay').style.display = 'none';
+      const overlay = document.getElementById('setup-overlay');
+      overlay.classList.add('fade-out');
+      setTimeout(() => { overlay.style.display = 'none'; }, 350);
       renderList();
       startScanner();
-    }, 500);
+    }, 400);
   } else {
     document.getElementById('setup-msg').textContent = 'No se encontraron los archivos en el servidor.';
     document.getElementById('manual-fallback').style.display = 'block';
@@ -807,7 +909,6 @@ function processCode(code) {
   if (!product) {
     showToast(`No encontrado: ${trimmed}`, 'error');
   } else {
-    showToast(`${product.ref || trimmed}`, 'success');
     ['unidades','rotura','vencido','otro'].forEach(t => {
       document.getElementById('btn-'+t).className = 'btn-action';
     });
@@ -825,16 +926,20 @@ function renderProductCard(product, rawCode) {
   const card = document.getElementById('product-card');
   if (!product) {
     card.className = 'product-card visible not-found';
+    card.style.opacity = '0';
     card.innerHTML = `<div class="pc-err">No encontrado: ${rawCode}</div>`;
+    requestAnimationFrame(() => { card.style.opacity = '1'; });
     return;
   }
   card.className = 'product-card visible found';
+  card.style.opacity = '0';
   card.innerHTML = `
     <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
-    <div class="pc-codes">
-      <span class="pc-code-item">REF <span>${product.ref || rawCode}</span></span>
-      ${product.ean ? `<span class="pc-code-item">EAN <span>${product.ean}</span></span>` : ''}
-    </div>`;
+    <div class="pc-ref">${product.ref || rawCode}${product.ean ? ' · ' + product.ean : ''}</div>`;
+  // Fade in rápido
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => { card.style.opacity = '1'; });
+  });
 }
 
 // ═══════════════════════════════════════════════
@@ -845,17 +950,16 @@ function setActionButtonsEnabled(enabled) {
   ['unidades','rotura','vencido','otro'].forEach((t, i) => {
     const btn = document.getElementById('btn-'+t);
     if (enabled) {
+      // La card verde aparece primero (~200ms), luego los botones en cascada
+      const delay = 220 + i * 55;
       setTimeout(() => {
         btn.disabled = false;
-        btn.className = 'btn-action pop-in';
+        btn.className = 'btn-action ready';
         btn.textContent = labels[t];
-        setTimeout(() => {
-          if (btn.classList.contains('pop-in')) btn.classList.remove('pop-in');
-        }, 350);
-      }, i * 60);
+      }, delay);
     } else {
       btn.disabled = true;
-      btn.className = 'btn-action skeleton';
+      btn.className = 'btn-action'; // hidden (opacity 0)
       btn.textContent = labels[t];
     }
   });
@@ -976,7 +1080,6 @@ const ICON_EDIT = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" st
 const ICON_DEL  = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9a1 1 0 001 1h6a1 1 0 001-1l1-9"/></svg>`;
 
 function renderList() {
-  document.getElementById('header-count').textContent = entries.length;
   const list = document.getElementById('entries-list');
 
   if (!entries.length) {
@@ -988,8 +1091,8 @@ function renderList() {
     <div class="entry-card" id="entry-${e.id}">
       <div class="entry-stripe stripe-${e.tipo}"></div>
       <div class="entry-body">
-        <div class="entry-code">${e.ref || e.dun}</div>
-        ${e.desc ? `<div class="entry-desc">${e.desc}</div>` : ''}
+        <div class="entry-code">${e.desc || e.ref || e.dun}</div>
+        ${(e.ref || e.dun) ? `<div class="entry-ref">${e.ref || e.dun}</div>` : ''}
         <div class="entry-chips">
           <span class="e-chip tipo-${e.tipo}">${TIPO_LABEL[e.tipo]}</span>
           ${e.subtipo    ? `<span class="e-chip sub-${e.subtipo.toLowerCase()}">${e.subtipo}</span>` : ''}
@@ -1237,7 +1340,6 @@ async function startScanner() {
                 lastCode = code; lastCodeTime = now;
                 document.querySelector('.scan-frame').style.borderColor = 'var(--success)';
                 setTimeout(() => { document.querySelector('.scan-frame').style.borderColor = 'var(--accent)'; }, 300);
-                status.textContent = 'Leído: ' + code;
                 processCode(code);
               }
             }
@@ -1283,7 +1385,6 @@ async function startScanner() {
       if (avg > 0.3) return;
       document.querySelector('.scan-frame').style.borderColor = 'var(--success)';
       setTimeout(() => { document.querySelector('.scan-frame').style.borderColor = 'var(--accent)'; }, 300);
-      document.getElementById('scan-status').textContent = 'Leído: ' + code;
       processCode(code);
     });
   });
@@ -1338,15 +1439,23 @@ document.getElementById('manual-input').addEventListener('keydown', e => {
 //  BACK BUTTON GUARD
 // ═══════════════════════════════════════════════
 history.pushState(null, '', location.href);
-window.addEventListener('popstate', () => {
+let _backGuardActive = true;
+function _backGuardHandler() {
+  if (!_backGuardActive) return;
   history.pushState(null, '', location.href);
   showConfirmDialog(
     '¿Salir de la app?',
     'Los registros no exportados se conservan en este dispositivo, pero si limpias el navegador se perderán.',
-    () => { history.back(); history.back(); },
+    () => {
+      _backGuardActive = false;
+      window.removeEventListener('popstate', _backGuardHandler);
+      // Ir atrás 2 veces: 1 por el pushState del handler, 1 para salir
+      history.go(-2);
+    },
     true
   );
-});
+}
+window.addEventListener('popstate', _backGuardHandler);
 
 // ═══════════════════════════════════════════════
 //  TOAST
@@ -1480,6 +1589,29 @@ function doExport() {
 
   XLSX.writeFile(wb, name.endsWith('.xlsx') ? name : name + '.xlsx');
 }
+
+// ═══════════════════════════════════════════════
+//  FULLSCREEN
+// ═══════════════════════════════════════════════
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const enter = document.getElementById('fs-icon-enter');
+  const exit  = document.getElementById('fs-icon-exit');
+  if (!enter || !exit) return;
+  if (document.fullscreenElement) {
+    enter.style.display = 'none';
+    exit.style.display  = '';
+  } else {
+    enter.style.display = '';
+    exit.style.display  = 'none';
+  }
+});
 
 // Auto-start scanner on load
 renderList();
