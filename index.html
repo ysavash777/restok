@@ -203,42 +203,15 @@
     .product-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 9px 12px; display: none;
-      transition: background .3s, border-color .3s;
     }
     .product-card.visible { display: block; }
-    .product-card.found   { background: rgba(63,185,80,.12); border-color: var(--success); animation: popIn .25s ease; }
+    .product-card.found   { border-color: var(--success); }
     .product-card.not-found { border-color: var(--danger); }
-    .pc-desc { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
-    .pc-ref-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .pc-ean-badge {
-      font-size: 11px; font-weight: 600; color: var(--muted);
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; padding: 3px 9px; letter-spacing: .3px;
-    }
-    .pc-ean-badge span { color: var(--text); font-weight: 700; margin-left: 2px; }
+    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 5px; }
+    .pc-codes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pc-code-item { font-size: 11px; color: var(--muted); font-weight: 500; }
+    .pc-code-item span { color: var(--text); font-weight: 600; }
     .pc-err { font-size: 12px; color: var(--danger); font-weight: 600; }
-
-    /* ── SKELETON ── */
-    @keyframes shimmer {
-      0%   { background-position: -400px 0; }
-      100% { background-position:  400px 0; }
-    }
-    .btn-action.skeleton {
-      background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
-      background-size: 400px 100%;
-      animation: shimmer 1.4s infinite linear;
-      color: transparent !important;
-      border-color: transparent !important;
-      cursor: default;
-      pointer-events: none;
-    }
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(0.92); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    .btn-action.revealed {
-      animation: popIn .28s cubic-bezier(.34,1.56,.64,1) forwards;
-    }
 
     /* ── ACTION BUTTONS ── */
     #action-panel { padding: 7px 14px; flex-shrink: 0; }
@@ -507,9 +480,13 @@
       <div class="scanner-overlay">
         <div class="scan-frame"><div class="scan-line"></div></div>
       </div>
-      <div class="scan-status" id="scan-status">Iniciando cámara…</div>
+      <div class="scan-status" id="scan-status">Presioná Iniciar para escanear</div>
     </div>
-    <div class="manual-row">
+    <div class="scan-controls">
+      <button class="btn-scan start" id="btn-toggle-scan" onclick="toggleScanner()">&#9654; Iniciar</button>
+      <button class="btn-manual-toggle" onclick="toggleManual()">Teclado</button>
+    </div>
+    <div class="manual-row" id="manual-row" style="display:none">
       <input class="manual-input" id="manual-input" type="text" placeholder="Referencia o DUN…" inputmode="numeric" autocomplete="off" />
       <button class="btn-go" onclick="processManual()">Buscar</button>
     </div>
@@ -523,10 +500,10 @@
   <!-- ACTIONS -->
   <div id="action-panel">
     <div class="action-row">
-      <button class="btn-action skeleton" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
-      <button class="btn-action skeleton" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
-      <button class="btn-action skeleton" id="btn-vencido"  onclick="selectTipo('vencido')"  disabled>Vencido</button>
-      <button class="btn-action skeleton" id="btn-otro"     onclick="selectTipo('otro')"     disabled>Otro</button>
+      <button class="btn-action" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
+      <button class="btn-action" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
+      <button class="btn-action" id="btn-vencido"  onclick="selectTipo('vencido')"  disabled>Vencido</button>
+      <button class="btn-action" id="btn-otro"     onclick="selectTipo('otro')"     disabled>Otro</button>
     </div>
 
     <!-- Fecha vencimiento (unidades) -->
@@ -679,7 +656,6 @@ async function autoLoad() {
     setTimeout(() => {
       document.getElementById('setup-overlay').style.display = 'none';
       renderList();
-      startScanner();
     }, 500);
   } else {
     document.getElementById('setup-msg').textContent = 'No se encontraron los archivos en el servidor.';
@@ -712,7 +688,6 @@ function setupManualListeners() {
   document.getElementById('btn-start').addEventListener('click', () => {
     document.getElementById('setup-overlay').style.display = 'none';
     renderList();
-    startScanner();
   });
 }
 
@@ -734,20 +709,19 @@ function lookupProduct(code) {
     const refCol  = findCol(row, ['codigoreferencia','codigo referencia','referencia','productoean']);
     const dunCol  = findCol(row, ['dun','dun14','codigo dun']);
     const descCol = findCol(row, ['descripcion','description','desc','nombre']);
-    const eanCol  = findCol(row, ['ean','ean13','codigoean','codigo ean']);
 
     const refVal = refCol ? String(row[refCol] ?? '').trim() : '';
     const dunVal = dunCol ? String(row[dunCol] ?? '').trim() : '';
 
     if ((refVal && refVal === trimmed) || (dunVal && dunVal === trimmed)) {
       const matchDun = dunVal === trimmed;
+      const refCode  = refVal;
       return {
         code: trimmed,
         matchType: matchDun ? 'DUN' : 'REF',
-        ref:  refVal,
+        ref:  refCode,
         dun:  dunVal,
-        ean:  eanCol  ? String(row[eanCol]  ?? '').trim() : '',
-        desc: descCol ? String(row[descCol] ?? '').trim() : '',
+        desc: descCol ? String(row[descCol] ?? '') : '',
       };
     }
   }
@@ -798,12 +772,10 @@ function renderProductCard(product, rawCode) {
     return;
   }
   card.className = 'product-card visible found';
-
   card.innerHTML = `
     <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
-    <div class="pc-ref-row">
-      <span class="pc-ean-badge">REF: <span>${product.ref || rawCode}</span></span>
-      ${product.ean ? `<span class="pc-ean-badge">EAN: <span>${product.ean}</span></span>` : ''}
+    <div class="pc-codes">
+      ${product.ref ? `<span class="pc-code-item">EAN <span>${product.ref}</span></span>` : ''}
     </div>`;
 }
 
@@ -811,25 +783,10 @@ function renderProductCard(product, rawCode) {
 //  ACTION BUTTONS
 // ═══════════════════════════════════════════════
 function setActionButtonsEnabled(enabled) {
-  const labels = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', otro:'Otro' };
-  ['unidades','rotura','vencido','otro'].forEach((t, i) => {
+  ['unidades','rotura','vencido','otro'].forEach(t => {
     const btn = document.getElementById('btn-'+t);
-    if (enabled) {
-      btn.disabled = false;
-      btn.classList.remove('skeleton');
-      // stagger reveal
-      btn.style.opacity = '0';
-      setTimeout(() => {
-        btn.style.opacity = '';
-        btn.classList.add('revealed');
-        btn.textContent = labels[t];
-        setTimeout(() => btn.classList.remove('revealed'), 300);
-      }, i * 55);
-    } else {
-      btn.disabled = true;
-      btn.className = 'btn-action skeleton';
-      btn.textContent = labels[t];
-    }
+    btn.disabled = !enabled;
+    if (!enabled) btn.className = 'btn-action';
   });
   if (!enabled) {
     document.getElementById('row-fecha').classList.remove('visible');
@@ -1158,12 +1115,12 @@ let _stream = null;         // MediaStream activo
 let _rafId  = null;         // requestAnimationFrame loop (nativo)
 let _nativeDetector = null; // BarcodeDetector instance
 
-// Auto-start scanner on load
 function toggleScanner() {
   if (scannerActive) stopScanner(); else startScanner();
 }
 
 async function startScanner() {
+  const btn    = document.getElementById('btn-toggle-scan');
   const status = document.getElementById('scan-status');
   status.textContent = 'Iniciando cámara…';
 
@@ -1196,6 +1153,8 @@ async function startScanner() {
       await video.play();
 
       scannerActive = true;
+      btn.innerHTML = '&#9724; Detener';
+      btn.className = 'btn-scan stop';
       status.textContent = '';
 
       // Canvas oculto para captura de frames
@@ -1231,7 +1190,8 @@ async function startScanner() {
       return; // éxito con nativo
     } catch (e) {
       // cámara denegada u otro error
-      status.textContent = 'Cámara no disponible — usá el campo manual';
+      status.textContent = 'Error: ' + e.message;
+      showToast('No se pudo acceder a la cámara', 'error');
       return;
     }
   }
@@ -1256,11 +1216,13 @@ async function startScanner() {
     locate: true,
   }, err => {
     if (err) {
-      document.getElementById('scan-status').textContent = 'Cámara no disponible — usá el campo manual';
-      return;
+      document.getElementById('scan-status').textContent = 'Error: ' + err.message;
+      showToast('No se pudo acceder a la cámara', 'error'); return;
     }
     Quagga.start();
     scannerActive = true;
+    btn.innerHTML = '&#9724; Detener';
+    btn.className = 'btn-scan stop';
     document.getElementById('scan-status').textContent = '';
 
     // Registrar handler DENTRO del callback para no apilar
@@ -1295,12 +1257,21 @@ function stopScanner() {
   // Detener Quagga si estaba en uso
   try { Quagga.offDetected(); Quagga.stop(); } catch(_) {}
 
+  const btn = document.getElementById('btn-toggle-scan');
+  btn.innerHTML = '&#9654; Iniciar';
+  btn.className = 'btn-scan start';
   document.getElementById('scan-status').textContent = 'Escáner detenido';
 }
 
 // ═══════════════════════════════════════════════
 //  MANUAL INPUT
 // ═══════════════════════════════════════════════
+function toggleManual() {
+  manualVisible = !manualVisible;
+  document.getElementById('manual-row').style.display = manualVisible ? 'flex' : 'none';
+  if (manualVisible) document.getElementById('manual-input').focus();
+}
+
 function processManual() {
   const input = document.getElementById('manual-input');
   if (input.value.trim()) processCode(input.value.trim());
