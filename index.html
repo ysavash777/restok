@@ -267,7 +267,22 @@
     }
 
     /* ── ACTION BUTTONS ── */
-    #action-panel { padding: 7px 14px; flex-shrink: 0; }
+    #action-panel {
+      padding: 0 14px;
+      flex-shrink: 0;
+      /* Colapsa verticalmente cuando los botones están ocultos */
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows .28s cubic-bezier(.4,0,.2,1),
+                  padding           .28s cubic-bezier(.4,0,.2,1);
+    }
+    #action-panel.expanded {
+      grid-template-rows: 1fr;
+      padding: 7px 14px;
+    }
+    /* Wrapper necesario para el grid collapse */
+    #action-inner { overflow: hidden; }
+
     .action-row { display: flex; gap: 5px; margin-bottom: 6px; }
     .btn-action {
       flex: 1; padding: 10px 4px;
@@ -280,6 +295,10 @@
     .btn-action.ready {
       pointer-events: auto;
       animation: popIn .22s cubic-bezier(.34,1.4,.64,1) forwards;
+    }
+    /* Una vez visibles, SIEMPRE mantener visible (opacity manejada por JS solo al aparecer/desaparecer total) */
+    .btn-action.visible {
+      opacity: 1; pointer-events: auto;
     }
     .btn-action:hover:not(:disabled) { border-color: var(--border); color: var(--text); }
     .btn-action.active.unidades { background: rgba(59,130,246,.15); border-color: #3b82f6; color: #93c5fd; }
@@ -627,6 +646,7 @@
 
   <!-- ACTIONS -->
   <div id="action-panel">
+    <div id="action-inner">
     <div class="action-row">
       <button class="btn-action" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
       <button class="btn-action" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
@@ -657,6 +677,7 @@
       <input class="qty-input" id="input-qty" type="number" min="1" value="1" inputmode="numeric" />
       <button class="btn-confirm" id="btn-confirm" onclick="confirmEntry()">&#10003; Confirmar</button>
     </div>
+    </div><!-- /action-inner -->
   </div>
 
   <!-- LIST -->
@@ -909,8 +930,12 @@ function processCode(code) {
   if (!product) {
     showToast(`No encontrado: ${trimmed}`, 'error');
   } else {
+    // Mantener botones visibles pero sin selección activa
     ['unidades','rotura','vencido','otro'].forEach(t => {
-      document.getElementById('btn-'+t).className = 'btn-action';
+      const btn = document.getElementById('btn-'+t);
+      if (btn.classList.contains('visible') || btn.classList.contains('ready')) {
+        btn.className = 'btn-action visible';
+      }
     });
     document.getElementById('row-fecha').classList.remove('visible');
     document.getElementById('row-rotura').classList.remove('visible');
@@ -947,23 +972,32 @@ function renderProductCard(product, rawCode) {
 // ═══════════════════════════════════════════════
 function setActionButtonsEnabled(enabled) {
   const labels = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', otro:'Otro' };
-  ['unidades','rotura','vencido','otro'].forEach((t, i) => {
-    const btn = document.getElementById('btn-'+t);
-    if (enabled) {
-      // La card verde aparece primero (~200ms), luego los botones en cascada
+  const panel = document.getElementById('action-panel');
+
+  if (enabled) {
+    // Primero expandir el panel (el list sube suave)
+    panel.classList.add('expanded');
+    // Luego aparecer botones en cascada
+    ['unidades','rotura','vencido','otro'].forEach((t, i) => {
+      const btn = document.getElementById('btn-'+t);
+      btn.disabled = false;
+      btn.textContent = labels[t];
       const delay = 220 + i * 55;
       setTimeout(() => {
-        btn.disabled = false;
         btn.className = 'btn-action ready';
-        btn.textContent = labels[t];
+        // Tras la animación, fijar visible para que no desaparezca al cambiar clase
+        setTimeout(() => { btn.classList.add('visible'); }, 260);
       }, delay);
-    } else {
+    });
+  } else {
+    // Colapsar panel → lista sube
+    panel.classList.remove('expanded');
+    ['unidades','rotura','vencido','otro'].forEach(t => {
+      const btn = document.getElementById('btn-'+t);
       btn.disabled = true;
-      btn.className = 'btn-action'; // hidden (opacity 0)
+      btn.className = 'btn-action'; // hidden
       btn.textContent = labels[t];
-    }
-  });
-  if (!enabled) {
+    });
     document.getElementById('row-fecha').classList.remove('visible');
     document.getElementById('row-rotura').classList.remove('visible');
     document.getElementById('row-comentario').classList.remove('visible');
@@ -974,8 +1008,12 @@ function setActionButtonsEnabled(enabled) {
 
 function selectTipo(tipo) {
   currentTipo = tipo;
+  // Solo cambiar el estado activo — todos siguen visibles
   ['unidades','rotura','vencido','otro'].forEach(t => {
-    document.getElementById('btn-'+t).className = t === tipo ? `btn-action active ${t}` : 'btn-action';
+    const btn = document.getElementById('btn-'+t);
+    btn.className = t === tipo
+      ? `btn-action visible active ${t}`
+      : 'btn-action visible';
   });
 
   document.getElementById('row-fecha').classList.toggle('visible', tipo === 'unidades');
