@@ -12,22 +12,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #0b0e13;
-      --surface: #111520;
-      --card:    #181e2a;
-      --card2:   #1c2333;
-      --border:  #262d3a;
-      --border2: #2f3848;
-      --accent:  #2f81f7;
-      --accent2: #6e40c9;
-      --success: #3fb950;
+      --bg:      #080b11;
+      --surface: #0e1320;
+      --card:    #141927;
+      --card2:   #18202e;
+      --border:  #1f2840;
+      --border2: #283248;
+      --accent:  #3b8ef8;
+      --accent2: #7c3aed;
+      --success: #22c55e;
       --danger:  #f85149;
-      --warn:    #d29922;
-      --idl:     #58a6ff;
-      --rappi:   #f97316;
-      --text:    #dde4ef;
-      --text2:   #a8b4c8;
-      --muted:   #5a6478;
+      --warn:    #f59e0b;
+      --idl:     #60a5fa;
+      --rappi:   #fb923c;
+      --text:    #e2eaf8;
+      --text2:   #94a3b8;
+      --muted:   #4b5a72;
       --radius:  13px;
       --font:    'Inter', system-ui, sans-serif;
     }
@@ -36,6 +36,8 @@
     body {
       font-family: var(--font);
       background: var(--bg);
+      background-image: radial-gradient(ellipse at 20% 0%, rgba(59,142,248,.07) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 100%, rgba(124,58,237,.06) 0%, transparent 50%);
       color: var(--text);
       display: flex; flex-direction: column;
       height: 100dvh; overflow: hidden;
@@ -50,11 +52,11 @@
     }
     #setup-overlay.fade-out { opacity: 0; pointer-events: none; }
     .setup-card {
-      background: var(--surface);
+      background: linear-gradient(160deg, rgba(18,24,40,1) 0%, rgba(12,17,28,1) 100%);
       border: 1px solid var(--border);
-      border-radius: 18px; padding: 28px 24px;
+      border-radius: 20px; padding: 28px 24px;
       max-width: 420px; width: 100%;
-      box-shadow: 0 24px 64px rgba(0,0,0,.5);
+      box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.025) inset;
     }
     .setup-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .setup-logo .dot {
@@ -129,9 +131,11 @@
     header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 11px 16px;
-      background: var(--surface);
+      background: linear-gradient(135deg, rgba(14,19,32,.98) 0%, rgba(18,24,40,.98) 100%);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(59,142,248,.06), 0 4px 20px rgba(0,0,0,.3);
     }
     .header-left { display: flex; align-items: center; gap: 9px; }
     .h-dot {
@@ -144,13 +148,21 @@
     .header-right { display: flex; align-items: center; gap: 6px; }
     .btn-icon {
       height: 32px; padding: 0 11px;
-      border-radius: 8px; border: 1px solid var(--border2);
-      background: var(--card); color: var(--text2);
+      border-radius: 8px;
+      border: 1px solid rgba(59,142,248,.25);
+      background: linear-gradient(135deg, rgba(59,142,248,.12) 0%, rgba(124,58,237,.08) 100%);
+      color: #93c5fd;
       font-size: 12px; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; gap: 5px;
-      white-space: nowrap; transition: background .15s, color .15s;
+      white-space: nowrap; transition: all .18s;
+      box-shadow: 0 0 0 0 rgba(59,142,248,0), inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .btn-icon:hover { background: var(--card2); color: var(--text); }
+    .btn-icon:hover {
+      background: linear-gradient(135deg, rgba(59,142,248,.22) 0%, rgba(124,58,237,.15) 100%);
+      border-color: rgba(59,142,248,.5);
+      color: #bfdbfe;
+      box-shadow: 0 0 12px rgba(59,142,248,.15);
+    }
     .btn-icon svg { width: 13px; height: 13px; flex-shrink: 0; }
 
     /* ─── APP ────────────────────────────────── */
@@ -270,19 +282,24 @@
     .action-row { display: flex; gap: 5px; margin-bottom: 6px; }
     .btn-action {
       flex: 1; padding: 10px 4px;
-      border-radius: 10px; border: 1.5px solid transparent;
+      border-radius: 10px; border: 1px solid rgba(148,163,184,.14);
       font-size: 12px; font-weight: 700; cursor: pointer;
-      background: var(--card); color: var(--muted);
+      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+      color: var(--text2);
       transition: all .15s; text-align: center;
       opacity: 0; pointer-events: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
     .btn-action.ready { pointer-events: auto; animation: popIn .22s cubic-bezier(.34,1.4,.64,1) forwards; }
     .btn-action.visible { opacity: 1; pointer-events: auto; }
-    .btn-action:hover:not(:disabled) { border-color: var(--border2); color: var(--text2); background: var(--card2); }
-    .btn-action.active.unidades { background: rgba(59,130,246,.13); border-color: rgba(59,130,246,.5); color: #93c5fd; }
-    .btn-action.active.rotura   { background: rgba(248,81,73,.13);  border-color: rgba(248,81,73,.5);  color: #fca5a5; }
-    .btn-action.active.vencido  { background: rgba(210,153,34,.13); border-color: rgba(210,153,34,.5); color: #fcd34d; }
-    .btn-action.active.otro     { background: rgba(90,100,120,.13); border-color: var(--border2);      color: var(--text2); }
+    .btn-action:hover:not(:disabled) {
+      border-color: rgba(148,163,184,.3); color: var(--text);
+      background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.04) 100%);
+    }
+    .btn-action.active.unidades { background: linear-gradient(135deg,rgba(59,130,246,.22),rgba(37,99,235,.15)); border-color: rgba(59,130,246,.6); color: #93c5fd; box-shadow: 0 0 12px rgba(59,130,246,.2), inset 0 1px 0 rgba(147,197,253,.1); }
+    .btn-action.active.rotura   { background: linear-gradient(135deg,rgba(248,81,73,.22),rgba(185,28,28,.15));  border-color: rgba(248,81,73,.6);  color: #fca5a5; box-shadow: 0 0 12px rgba(248,81,73,.2), inset 0 1px 0 rgba(252,165,165,.1); }
+    .btn-action.active.vencido  { background: linear-gradient(135deg,rgba(245,158,11,.22),rgba(180,83,9,.15));  border-color: rgba(245,158,11,.6);  color: #fcd34d; box-shadow: 0 0 12px rgba(245,158,11,.2), inset 0 1px 0 rgba(252,211,77,.1); }
+    .btn-action.active.otro     { background: linear-gradient(135deg,rgba(100,116,139,.22),rgba(71,85,105,.15)); border-color: rgba(100,116,139,.5); color: var(--text2); box-shadow: 0 0 12px rgba(100,116,139,.15), inset 0 1px 0 rgba(148,163,184,.06); }
     .btn-action:disabled { cursor: not-allowed; }
 
     /* sub rows */
@@ -319,13 +336,15 @@
     /* rotura buttons */
     .btn-rotura {
       flex: 1; padding: 10px 4px;
-      border-radius: 10px; border: 1.5px solid transparent;
+      border-radius: 10px; border: 1px solid rgba(148,163,184,.14);
       font-size: 13px; font-weight: 700; cursor: pointer;
-      background: var(--card); color: var(--muted); transition: all .15s;
+      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+      color: var(--text2); transition: all .15s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .btn-rotura:hover { background: var(--card2); color: var(--text2); border-color: var(--border2); }
-    .btn-rotura.active.idl   { background: rgba(88,166,255,.12);  border-color: rgba(88,166,255,.45);  color: var(--idl); }
-    .btn-rotura.active.rappi { background: rgba(249,115,22,.12);  border-color: rgba(249,115,22,.45); color: var(--rappi); }
+    .btn-rotura:hover { background: linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.04)); color: var(--text); border-color: rgba(148,163,184,.3); }
+    .btn-rotura.active.idl   { background: linear-gradient(135deg,rgba(96,165,250,.22),rgba(37,99,235,.15));  border-color: rgba(96,165,250,.6);  color: var(--idl); box-shadow: 0 0 12px rgba(96,165,250,.2); }
+    .btn-rotura.active.rappi { background: linear-gradient(135deg,rgba(251,146,60,.22),rgba(194,65,12,.15));  border-color: rgba(251,146,60,.6); color: var(--rappi); box-shadow: 0 0 12px rgba(251,146,60,.2); }
 
     /* qty + confirm */
     .qty-row { display: none; gap: 6px; align-items: center; }
@@ -358,64 +377,80 @@
     .list-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 7px 0 9px; position: sticky; top: 0;
-      background: var(--bg); z-index: 10;
+      background: transparent; z-index: 10;
+      backdrop-filter: blur(12px);
     }
     .list-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
 
-    /* entry cards */
+    /* entry cards — premium redesign */
     .entry-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 11px; padding: 10px 12px; margin-bottom: 5px;
-      display: flex; align-items: flex-start; gap: 10px;
-      animation: slideIn .17s ease;
-      transition: border-color .15s, background .15s;
+      border-radius: 13px; padding: 0; margin-bottom: 7px;
+      display: flex; align-items: stretch;
+      animation: slideIn .17s ease; overflow: hidden;
+      border: 1px solid var(--border);
+      transition: border-color .18s, box-shadow .18s, transform .12s;
+      position: relative;
     }
-    .entry-card:hover { background: var(--card2); border-color: var(--border2); }
+    .entry-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 13px;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.025) 0%, transparent 60%);
+    }
+    .entry-card:hover { border-color: var(--border2); box-shadow: 0 4px 20px rgba(0,0,0,.35); transform: translateY(-1px); }
+    .entry-card.tipo-unidades { border-color: rgba(59,130,246,.22); background: linear-gradient(125deg, rgba(59,130,246,.1) 0%, rgba(14,19,32,.97) 45%); }
+    .entry-card.tipo-rotura   { border-color: rgba(248,81,73,.22);  background: linear-gradient(125deg, rgba(248,81,73,.1)  0%, rgba(14,19,32,.97) 45%); }
+    .entry-card.tipo-vencido  { border-color: rgba(245,158,11,.22); background: linear-gradient(125deg, rgba(245,158,11,.1) 0%, rgba(14,19,32,.97) 45%); }
+    .entry-card.tipo-otro     { border-color: rgba(100,116,139,.18); background: linear-gradient(125deg, rgba(100,116,139,.08) 0%, rgba(14,19,32,.97) 45%); }
+    .entry-card.tipo-unidades:hover { box-shadow: 0 4px 24px rgba(59,130,246,.14); }
+    .entry-card.tipo-rotura:hover   { box-shadow: 0 4px 24px rgba(248,81,73,.12); }
+    .entry-card.tipo-vencido:hover  { box-shadow: 0 4px 24px rgba(245,158,11,.12); }
+
     @keyframes slideIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
-    .entry-stripe { width: 3px; border-radius: 3px; flex-shrink: 0; align-self: stretch; min-height: 28px; }
-    .stripe-unidades { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
-    .stripe-rotura   { background: linear-gradient(180deg, var(--danger), #b91c1c); }
-    .stripe-vencido  { background: linear-gradient(180deg, var(--warn), #92400e); }
-    .stripe-otro     { background: linear-gradient(180deg, var(--muted), #374151); }
-    .entry-body { flex: 1; min-width: 0; }
+
+    /* left qty column */
+    .entry-qty-col {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 12px 8px 12px 14px; flex-shrink: 0; min-width: 50px;
+    }
+    .entry-qty-num {
+      font-size: 24px; font-weight: 800; line-height: 1;
+      letter-spacing: -.5px; font-variant-numeric: tabular-nums;
+    }
+    .entry-card.tipo-unidades .entry-qty-num { color: #93c5fd; text-shadow: 0 0 16px rgba(147,197,253,.35); }
+    .entry-card.tipo-rotura   .entry-qty-num { color: #fca5a5; text-shadow: 0 0 16px rgba(252,165,165,.3); }
+    .entry-card.tipo-vencido  .entry-qty-num { color: #fcd34d; text-shadow: 0 0 16px rgba(252,211,77,.3); }
+    .entry-card.tipo-otro     .entry-qty-num { color: var(--text2); }
+    .entry-qty-label { font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+    .entry-divider { width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0; align-self: stretch; }
+
+    .entry-body { flex: 1; min-width: 0; padding: 11px 10px 11px 12px; }
     .entry-code { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
-    .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; }
-    .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+    .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; letter-spacing: .1px; }
+    .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
     .e-chip {
       font-size: 10px; font-weight: 700;
       padding: 2px 7px; border-radius: 5px;
       display: inline-flex; align-items: center; gap: 3px;
     }
-    .e-chip.tipo-unidades { background: rgba(59,130,246,.14); color: #93c5fd; }
-    .e-chip.tipo-rotura   { background: rgba(248,81,73,.14);  color: #fca5a5; }
-    .e-chip.tipo-vencido  { background: rgba(210,153,34,.14); color: #fcd34d; }
-    .e-chip.tipo-otro     { background: rgba(90,100,120,.14); color: var(--text2); }
-    .e-chip.sub-idl       { background: rgba(88,166,255,.14); color: var(--idl); }
-    .e-chip.sub-rappi     { background: rgba(249,115,22,.14); color: var(--rappi); }
-    .e-chip.qty {
-      background: var(--surface); border: 1px solid var(--border2);
-      color: var(--text); font-variant-numeric: tabular-nums;
-    }
-    /* # icon box inside qty chip */
-    .qty-icon {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 13px; height: 13px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 3px; flex-shrink: 0;
-    }
-    .qty-icon svg { width: 8px; height: 8px; }
-    .e-chip.fv   { background: var(--surface); border: 1px solid var(--border2); color: var(--warn); }
-    .e-chip.cmnt { background: var(--surface); border: 1px solid var(--border2); color: var(--text2); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .entry-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .e-chip.tipo-unidades { background: rgba(59,130,246,.15); color: #93c5fd; border: 1px solid rgba(59,130,246,.22); }
+    .e-chip.tipo-rotura   { background: rgba(248,81,73,.15);  color: #fca5a5; border: 1px solid rgba(248,81,73,.22); }
+    .e-chip.tipo-vencido  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.22); }
+    .e-chip.tipo-otro     { background: rgba(100,116,139,.15); color: var(--text2); border: 1px solid rgba(100,116,139,.22); }
+    .e-chip.sub-idl       { background: rgba(96,165,250,.15); color: var(--idl); border: 1px solid rgba(96,165,250,.22); }
+    .e-chip.sub-rappi     { background: rgba(251,146,60,.15); color: var(--rappi); border: 1px solid rgba(251,146,60,.22); }
+    .e-chip.fv   { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.2); color: var(--warn); }
+    .e-chip.cmnt { background: rgba(148,163,184,.08); border: 1px solid var(--border2); color: var(--text2); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .entry-actions { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px 10px 8px 2px; flex-shrink: 0; }
     .btn-entry {
-      width: 30px; height: 30px; border-radius: 7px;
-      border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+      width: 28px; height: 28px; border-radius: 7px;
+      border: 1px solid rgba(148,163,184,.1); background: rgba(255,255,255,.03); color: var(--muted);
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: all .15s;
     }
-    .btn-entry svg { width: 13px; height: 13px; }
-    .btn-entry.del:hover  { background: rgba(248,81,73,.12);  color: var(--danger); border-color: rgba(248,81,73,.4); }
-    .btn-entry.edit:hover { background: rgba(47,129,247,.12); color: var(--accent); border-color: rgba(47,129,247,.4); }
+    .btn-entry svg { width: 12px; height: 12px; }
+    .btn-entry.del:hover  { background: rgba(248,81,73,.14);  color: var(--danger); border-color: rgba(248,81,73,.35); }
+    .btn-entry.edit:hover { background: rgba(59,142,248,.14); color: var(--accent); border-color: rgba(59,142,248,.35); }
 
     /* ─── EMPTY STATE ────────────────────────── */
     .empty-state {
@@ -495,10 +530,11 @@
       padding: 24px; animation: fadeIn .15s;
     }
     .dialog-box {
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 16px; padding: 22px 20px;
+      background: linear-gradient(160deg, rgba(18,24,40,1) 0%, rgba(14,19,32,1) 100%);
+      border: 1px solid var(--border2);
+      border-radius: 18px; padding: 22px 20px;
       max-width: 320px; width: 100%;
-      box-shadow: 0 24px 64px rgba(0,0,0,.6);
+      box-shadow: 0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.03) inset;
     }
     .dialog-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
     .dialog-box p  { font-size: 13px; color: var(--text2); margin-bottom: 18px; line-height: 1.5; }
@@ -527,10 +563,12 @@
       backdrop-filter: blur(4px); animation: fadeIn .15s;
     }
     .modal-sheet {
-      background: var(--surface); border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, rgba(18,24,40,1) 0%, rgba(14,19,32,1) 100%);
+      border-radius: 18px 18px 0 0;
       padding: 18px 18px 30px;
       width: 100%; max-width: 600px; animation: slideUp .2s ease;
-      border-top: 1px solid var(--border2);
+      border-top: 1px solid rgba(59,142,248,.15);
+      box-shadow: 0 -8px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.03) inset;
     }
     @keyframes slideUp { from{transform:translateY(30px)} to{transform:none} }
     .modal-handle { width: 36px; height: 3px; background: var(--border2); border-radius: 3px; margin: 0 auto 14px; }
@@ -1141,6 +1179,22 @@ function confirmEntry() {
   const subtipo    = currentTipo === 'rotura'   ? currentRotura : null;
   const comentario = currentTipo === 'otro'     ? document.getElementById('input-comentario').value.trim() : null;
 
+  const tipoLabel = TIPO_LABELS[currentTipo] || currentTipo;
+  const refLabel  = currentProduct.ref || currentProduct.dun || '';
+  const detalle   = subtipo ? ` · ${subtipo}` : fechaVenc ? ` · Venc. ${fechaVenc}` : comentario ? ` · ${comentario}` : '';
+  showConfirmDialog(
+    '¿Confirmar registro?',
+    `${refLabel} — ${tipoLabel}${detalle} — Cant: ${qty}`,
+    _doConfirmEntry, true
+  );
+}
+
+function _doConfirmEntry() {
+  const qty        = Math.max(1, parseInt(document.getElementById('input-qty').value) || 1);
+  const fechaVenc  = currentTipo === 'unidades' ? document.getElementById('input-fecha').value : null;
+  const subtipo    = currentTipo === 'rotura'   ? currentRotura : null;
+  const comentario = currentTipo === 'otro'     ? document.getElementById('input-comentario').value.trim() : null;
+
   const key = entryKey(currentProduct.ref, currentTipo, subtipo, fechaVenc, comentario);
   const existing = entries.find(e => entryKey(e.ref, e.tipo, e.subtipo, e.fechaVenc, e.comentario) === key);
 
@@ -1165,6 +1219,7 @@ function confirmEntry() {
 }
 
 document.getElementById('input-qty').addEventListener('keydown', e => { if (e.key === 'Enter') confirmEntry(); });
+document.getElementById('input-comentario').addEventListener('keydown', e => { if (e.key === 'Enter') confirmEntry(); });
 
 // ═══════════════════════════════════════════════
 //  RENDER LIST
@@ -1181,15 +1236,18 @@ function renderList() {
     return;
   }
   list.innerHTML = entries.map(e => `
-    <div class="entry-card" id="entry-${e.id}">
-      <div class="entry-stripe stripe-${e.tipo}"></div>
+    <div class="entry-card tipo-${e.tipo}" id="entry-${e.id}">
+      <div class="entry-qty-col">
+        <span class="entry-qty-num">${e.qty}</span>
+        <span class="entry-qty-label">uds</span>
+      </div>
+      <div class="entry-divider"></div>
       <div class="entry-body">
         <div class="entry-code">${e.desc || e.ref || e.dun}</div>
         ${(e.ref||e.dun) ? `<div class="entry-ref">${e.ref||e.dun}</div>` : ''}
         <div class="entry-chips">
           <span class="e-chip tipo-${e.tipo}">${TIPO_LABEL[e.tipo]}</span>
           ${e.subtipo ? `<span class="e-chip sub-${e.subtipo.toLowerCase()}">${e.subtipo}</span>` : ''}
-          <span class="e-chip qty">${QTY_ICON}${e.qty}</span>
           ${e.fechaVenc ? `<span class="e-chip fv">Venc. ${e.fechaVenc}</span>` : ''}
           ${e.comentario ? `<span class="e-chip cmnt" title="${e.comentario}">${e.comentario}</span>` : ''}
         </div>
@@ -1221,6 +1279,14 @@ function editEntry(id) {
   const tipoOpts = ['unidades','rotura','vencido','otro'].map(t =>
     `<option value="${t}" ${t===e.tipo?'selected':''}>${TIPO_LABEL[t]}</option>`
   ).join('');
+
+  // Parse existing date for seg fields
+  let editDd='', editMm='', editAa='';
+  if (e.fechaVenc) {
+    const parts = e.fechaVenc.split('-'); // YYYY-MM-DD
+    if (parts.length===3) { editAa=parts[0]; editMm=parts[1]; editDd=parts[2]; }
+  }
+
   document.body.insertAdjacentHTML('beforeend', `
     <div class="modal-backdrop" id="edit-modal" onclick="closeEditIfOutside(event)">
       <div class="modal-sheet">
@@ -1236,7 +1302,14 @@ function editEntry(id) {
         </div>
         <div class="modal-field" id="edit-fecha-field" style="${e.tipo==='unidades'?'':'display:none'}">
           <label>Fecha vencimiento</label>
-          <input type="date" id="edit-fecha" value="${e.fechaVenc||''}" />
+          <div class="date-seg-wrap" id="edit-date-seg-wrap">
+            <input class="date-seg-part" id="edit-seg-dd" maxlength="2" inputmode="numeric" placeholder="DD" autocomplete="off" value="${editDd}" />
+            <span class="date-seg-sep">/</span>
+            <input class="date-seg-part" id="edit-seg-mm" maxlength="2" inputmode="numeric" placeholder="MM" autocomplete="off" value="${editMm}" />
+            <span class="date-seg-sep">/</span>
+            <input class="date-seg-part date-seg-year" id="edit-seg-aa" maxlength="4" inputmode="numeric" placeholder="AAAA" autocomplete="off" value="${editAa}" />
+          </div>
+          <input type="hidden" id="edit-fecha" value="${e.fechaVenc||''}" />
         </div>
         <div class="modal-field" id="edit-comentario-field" style="${e.tipo==='otro'?'':'display:none'}">
           <label>Comentario</label><textarea id="edit-comentario">${e.comentario||''}</textarea>
@@ -1244,10 +1317,79 @@ function editEntry(id) {
         <div class="modal-field"><label>Cantidad</label><input type="number" id="edit-qty" value="${e.qty}" min="1" placeholder="1" inputmode="numeric" /></div>
         <div class="modal-btns">
           <button class="m-cancel" onclick="closeEditModal()">Cancelar</button>
-          <button class="m-save" onclick="saveEdit()">Guardar</button>
+          <button class="m-save" onclick="confirmSaveEdit()">Guardar</button>
         </div>
       </div>
     </div>`);
+
+  // Init segmented date in edit modal
+  (function initEditSegDate() {
+    function syncEdit() {
+      const dd = (document.getElementById('edit-seg-dd')||{}).value||'';
+      const mm = (document.getElementById('edit-seg-mm')||{}).value||'';
+      const aa = (document.getElementById('edit-seg-aa')||{}).value||'';
+      const h = document.getElementById('edit-fecha');
+      if (h) h.value = (dd && mm && aa && aa.length===4) ? `${aa}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}` : '';
+    }
+    function setupSeg(el, maxLen, nextId) {
+      if (!el) return;
+      el.addEventListener('input', () => {
+        let v = el.value.replace(/\D/g,'').slice(0,maxLen);
+        el.value = v; syncEdit();
+        if (v.length === maxLen && nextId) { const n = document.getElementById(nextId); if(n) n.focus(); }
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && el.value === '') {
+          const prevMap = {'edit-seg-mm':'edit-seg-dd','edit-seg-aa':'edit-seg-mm'};
+          if (prevMap[el.id]) { const p = document.getElementById(prevMap[el.id]); if(p) p.focus(); }
+        }
+        if (e.key === 'Enter') {
+          // from date field, jump to qty if filled, else stay
+          const qty = document.getElementById('edit-qty'); if(qty) qty.focus();
+        }
+      });
+    }
+    setupSeg(document.getElementById('edit-seg-dd'), 2, 'edit-seg-mm');
+    setupSeg(document.getElementById('edit-seg-mm'), 2, 'edit-seg-aa');
+    setupSeg(document.getElementById('edit-seg-aa'), 4, null);
+  })();
+
+  // Enter on qty → confirm
+  const editQtyEl = document.getElementById('edit-qty');
+  if (editQtyEl) editQtyEl.addEventListener('keydown', ev => { if (ev.key==='Enter') confirmSaveEdit(); });
+  // Enter on comentario → confirm
+  const editCmntEl = document.getElementById('edit-comentario');
+  if (editCmntEl) editCmntEl.addEventListener('keydown', ev => { if (ev.key==='Enter' && !ev.shiftKey) { ev.preventDefault(); confirmSaveEdit(); } });
+}
+
+function confirmSaveEdit() {
+  // Capture all values now, before the modal might be closed
+  const tipo       = document.getElementById('edit-tipo') ? document.getElementById('edit-tipo').value : null;
+  const subtipo    = tipo==='rotura'   ? (document.getElementById('edit-subtipo') ? document.getElementById('edit-subtipo').value : null) : null;
+  const fechaVenc  = tipo==='unidades' ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
+  const comentario = tipo==='otro'     ? (document.getElementById('edit-comentario') ? document.getElementById('edit-comentario').value.trim() : null) : null;
+  const qty        = Math.max(1, parseInt(document.getElementById('edit-qty') ? document.getElementById('edit-qty').value : 1) || 1);
+  const tipoLabel  = TIPO_LABEL[tipo] || tipo;
+  const e          = entries.find(x => x.id === editingId);
+  if (!e || !tipo) return;
+  const detalle = subtipo ? ` · ${subtipo}` : fechaVenc ? ` · Venc. ${fechaVenc}` : comentario ? ` · ${comentario}` : '';
+  showConfirmDialog(
+    '¿Confirmar cambios?',
+    `${e.ref||e.dun} — ${tipoLabel}${detalle} — Cant: ${qty}`,
+    () => {
+      const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
+      const collision = entries.find(x => x.id !== editingId && entryKey(x.ref,x.tipo,x.subtipo,x.fechaVenc,x.comentario) === newKey);
+      closeEditModal();
+      if (collision) {
+        collision.qty += qty; entries = entries.filter(x => x.id !== e.id);
+        saveEntries(); renderList(); showToast(`Combinado: ${collision.ref} · ${collision.qty}`, 'success');
+      } else {
+        e.tipo=tipo; e.subtipo=subtipo; e.fechaVenc=fechaVenc; e.comentario=comentario; e.qty=qty;
+        saveEntries(); renderList(); showToast('Guardado', 'success');
+      }
+    },
+    true
+  );
 }
 function editTipoChange() {
   const tipo = document.getElementById('edit-tipo').value;
@@ -1257,11 +1399,11 @@ function editTipoChange() {
 }
 function saveEdit() {
   const e = entries.find(x => x.id === editingId); if (!e) return;
-  const tipo       = document.getElementById('edit-tipo').value;
-  const subtipo    = tipo==='rotura'   ? document.getElementById('edit-subtipo').value    : null;
-  const fechaVenc  = tipo==='unidades' ? document.getElementById('edit-fecha').value      : null;
-  const comentario = tipo==='otro'     ? document.getElementById('edit-comentario').value.trim() : null;
-  const qty        = Math.max(1, parseInt(document.getElementById('edit-qty').value) || 1);
+  const tipo       = document.getElementById('edit-tipo') ? document.getElementById('edit-tipo').value : e.tipo;
+  const subtipo    = tipo==='rotura'   ? (document.getElementById('edit-subtipo') ? document.getElementById('edit-subtipo').value : null) : null;
+  const fechaVenc  = tipo==='unidades' ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
+  const comentario = tipo==='otro'     ? (document.getElementById('edit-comentario') ? document.getElementById('edit-comentario').value.trim() : null) : null;
+  const qty        = Math.max(1, parseInt(document.getElementById('edit-qty') ? document.getElementById('edit-qty').value : e.qty) || 1);
   const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
   const collision = entries.find(x => x.id !== editingId && entryKey(x.ref,x.tipo,x.subtipo,x.fechaVenc,x.comentario) === newKey);
   closeEditModal();
