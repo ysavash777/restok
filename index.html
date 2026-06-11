@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Mapeo · Inventario</title>
+  <title>GDSMap · Inventario</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,9 +35,11 @@
     html, body { height: 100%; overflow: hidden; }
     body {
       font-family: var(--font);
-      background: var(--bg);
-      background-image: radial-gradient(ellipse at 20% 0%, rgba(59,142,248,.07) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 100%, rgba(124,58,237,.06) 0%, transparent 50%);
+      background: #060810;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 15% 0%, rgba(59,142,248,.13) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 85% 100%, rgba(124,58,237,.11) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(14,19,34,.9) 0%, transparent 100%);
       color: var(--text);
       display: flex; flex-direction: column;
       height: 100dvh; overflow: hidden;
@@ -60,10 +62,12 @@
     }
     .setup-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .setup-logo .dot {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 11px;
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, rgba(59,142,248,.25) 0%, rgba(124,58,237,.2) 100%);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 13px;
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
     }
     .setup-logo h2 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
     .setup-card p { color: var(--text2); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
@@ -130,19 +134,34 @@
     /* ─── HEADER ─────────────────────────────── */
     header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 11px 16px;
-      background: linear-gradient(135deg, rgba(14,19,32,.98) 0%, rgba(18,24,40,.98) 100%);
-      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      background: linear-gradient(135deg,
+        rgba(10,14,26,.98) 0%,
+        rgba(14,20,38,.98) 50%,
+        rgba(10,13,24,.98) 100%);
+      border-bottom: 1px solid rgba(59,142,248,.15);
       flex-shrink: 0;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 1px 0 rgba(59,142,248,.06), 0 4px 20px rgba(0,0,0,.3);
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 1px 0 rgba(59,142,248,.08),
+        0 4px 32px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.03);
+      position: relative;
+    }
+    header::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(59,142,248,.3), rgba(124,58,237,.2), transparent);
+      pointer-events: none;
     }
     .header-left { display: flex; align-items: center; gap: 9px; }
     .h-dot {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 7px;
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, rgba(59,142,248,.2) 0%, rgba(124,58,237,.15) 100%);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
     }
     header h1 { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
     .header-right { display: flex; align-items: center; gap: 6px; }
@@ -237,8 +256,8 @@
     .manual-input {
       flex: 1; background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; color: var(--text);
-      font-size: 15px; padding: 9px 13px; outline: none; font-family: var(--font);
-      transition: border-color .15s;
+      font-size: 13px; padding: 9px 13px; outline: none; font-family: var(--font);
+      transition: border-color .15s; min-width: 0;
     }
     .manual-input:focus { border-color: var(--accent); background: var(--card2); }
     .manual-input::placeholder { color: var(--muted); }
@@ -257,12 +276,44 @@
       border-radius: var(--radius); padding: 11px 14px; display: none;
       opacity: 0; transition: opacity .2s;
     }
-    .product-card.visible { display: block; }
-    .product-card.found   { background: rgba(63,185,80,.08); border-color: rgba(63,185,80,.4); }
-    .product-card.not-found { border-color: rgba(248,81,73,.4); background: rgba(248,81,73,.06); }
+    .product-card.visible { display: flex; align-items: center; gap: 10px; }
+    .product-card.found {
+      background: linear-gradient(135deg, rgba(34,197,94,.1) 0%, rgba(14,19,32,.97) 60%);
+      border-color: rgba(34,197,94,.35);
+      box-shadow: 0 0 20px rgba(34,197,94,.08), inset 0 1px 0 rgba(34,197,94,.06);
+    }
+    .product-card.not-found {
+      border-color: rgba(248,81,73,.35);
+      background: linear-gradient(135deg, rgba(248,81,73,.08) 0%, rgba(14,19,32,.97) 60%);
+    }
+    .pc-check {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 14px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.2);
+    }
+    .pc-check svg { width: 14px; height: 14px; }
+    .pc-cross {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #f85149 0%, #c0392b 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 14px rgba(248,81,73,.4), inset 0 1px 0 rgba(255,255,255,.2);
+    }
+    .pc-cross svg { width: 14px; height: 14px; }
+    .pc-info { flex: 1; min-width: 0; }
     .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 2px; }
     .pc-ref  { font-size: 11px; color: var(--text2); font-weight: 500; }
-    .pc-err  { font-size: 12px; color: var(--danger); font-weight: 600; }
+    .pc-err  { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
+    .pc-retry { font-size: 11px; color: rgba(248,81,73,.65); font-weight: 500; }
+    .pc-close {
+      width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .pc-close:hover { background: rgba(248,81,73,.15); border-color: rgba(248,81,73,.35); color: var(--danger); }
+    .pc-close svg { width: 10px; height: 10px; }
 
     /* ─── ACTION PANEL ───────────────────────── */
     #action-panel {
@@ -281,25 +332,51 @@
 
     .action-row { display: flex; gap: 5px; margin-bottom: 6px; }
     .btn-action {
-      flex: 1; padding: 10px 4px;
-      border-radius: 10px; border: 1px solid rgba(148,163,184,.14);
+      flex: 1; padding: 11px 4px;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,.08);
       font-size: 12px; font-weight: 700; cursor: pointer;
-      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
-      color: var(--text2);
-      transition: all .15s; text-align: center;
+      background: linear-gradient(160deg,
+        rgba(255,255,255,.07) 0%,
+        rgba(255,255,255,.02) 100%);
+      color: var(--text);
+      transition: all .18s cubic-bezier(.4,0,.2,1);
+      text-align: center;
       opacity: 0; pointer-events: none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      letter-spacing: .2px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        inset 0 -1px 0 rgba(0,0,0,.2),
+        0 2px 8px rgba(0,0,0,.25);
     }
     .btn-action.ready { pointer-events: auto; animation: popIn .22s cubic-bezier(.34,1.4,.64,1) forwards; }
     .btn-action.visible { opacity: 1; pointer-events: auto; }
     .btn-action:hover:not(:disabled) {
-      border-color: rgba(148,163,184,.3); color: var(--text);
-      background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.04) 100%);
+      border-color: rgba(255,255,255,.15); color: #fff;
+      background: linear-gradient(160deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.05) 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 4px 16px rgba(0,0,0,.3);
+      transform: translateY(-1px);
     }
-    .btn-action.active.unidades { background: linear-gradient(135deg,rgba(59,130,246,.22),rgba(37,99,235,.15)); border-color: rgba(59,130,246,.6); color: #93c5fd; box-shadow: 0 0 12px rgba(59,130,246,.2), inset 0 1px 0 rgba(147,197,253,.1); }
-    .btn-action.active.rotura   { background: linear-gradient(135deg,rgba(248,81,73,.22),rgba(185,28,28,.15));  border-color: rgba(248,81,73,.6);  color: #fca5a5; box-shadow: 0 0 12px rgba(248,81,73,.2), inset 0 1px 0 rgba(252,165,165,.1); }
-    .btn-action.active.vencido  { background: linear-gradient(135deg,rgba(245,158,11,.22),rgba(180,83,9,.15));  border-color: rgba(245,158,11,.6);  color: #fcd34d; box-shadow: 0 0 12px rgba(245,158,11,.2), inset 0 1px 0 rgba(252,211,77,.1); }
-    .btn-action.active.otro     { background: linear-gradient(135deg,rgba(100,116,139,.22),rgba(71,85,105,.15)); border-color: rgba(100,116,139,.5); color: var(--text2); box-shadow: 0 0 12px rgba(100,116,139,.15), inset 0 1px 0 rgba(148,163,184,.06); }
+    .btn-action.active.unidades {
+      background: linear-gradient(160deg, rgba(59,130,246,.35) 0%, rgba(37,99,235,.2) 100%);
+      border-color: rgba(147,197,253,.45); color: #bfdbfe;
+      box-shadow: 0 0 18px rgba(59,130,246,.25), inset 0 1px 0 rgba(147,197,253,.2), inset 0 -1px 0 rgba(37,99,235,.3);
+    }
+    .btn-action.active.rotura {
+      background: linear-gradient(160deg, rgba(248,81,73,.35) 0%, rgba(185,28,28,.2) 100%);
+      border-color: rgba(252,165,165,.45); color: #fecaca;
+      box-shadow: 0 0 18px rgba(248,81,73,.25), inset 0 1px 0 rgba(252,165,165,.2), inset 0 -1px 0 rgba(185,28,28,.3);
+    }
+    .btn-action.active.vencido {
+      background: linear-gradient(160deg, rgba(245,158,11,.35) 0%, rgba(180,83,9,.2) 100%);
+      border-color: rgba(252,211,77,.45); color: #fde68a;
+      box-shadow: 0 0 18px rgba(245,158,11,.25), inset 0 1px 0 rgba(252,211,77,.2), inset 0 -1px 0 rgba(180,83,9,.3);
+    }
+    .btn-action.active.otro {
+      background: linear-gradient(160deg, rgba(100,116,139,.3) 0%, rgba(71,85,105,.2) 100%);
+      border-color: rgba(148,163,184,.4); color: var(--text2);
+      box-shadow: 0 0 14px rgba(100,116,139,.18), inset 0 1px 0 rgba(148,163,184,.12);
+    }
     .btn-action:disabled { cursor: not-allowed; }
 
     /* sub rows */
@@ -378,7 +455,6 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 7px 0 9px; position: sticky; top: 0;
       background: transparent; z-index: 10;
-      backdrop-filter: blur(12px);
     }
     .list-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
 
@@ -390,6 +466,7 @@
       border: 1px solid var(--border);
       transition: border-color .18s, box-shadow .18s, transform .12s;
       position: relative;
+      min-height: 68px;
     }
     .entry-card::before {
       content: ''; position: absolute; inset: 0; border-radius: 13px;
@@ -407,14 +484,19 @@
 
     @keyframes slideIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
 
-    /* left qty column */
+    /* left qty column — fixed width, font scales to fit */
     .entry-qty-col {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 12px 8px 12px 14px; flex-shrink: 0; min-width: 50px;
+      width: 58px; min-width: 58px; max-width: 58px; flex-shrink: 0;
+      padding: 10px 6px;
     }
     .entry-qty-num {
-      font-size: 24px; font-weight: 800; line-height: 1;
+      width: 100%; text-align: center;
+      font-weight: 800; line-height: 1;
       letter-spacing: -.5px; font-variant-numeric: tabular-nums;
+      font-size: clamp(10px, 4.2vw, 19px);
+      overflow: hidden; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
     }
     .entry-card.tipo-unidades .entry-qty-num { color: #93c5fd; text-shadow: 0 0 16px rgba(147,197,253,.35); }
     .entry-card.tipo-rotura   .entry-qty-num { color: #fca5a5; text-shadow: 0 0 16px rgba(252,165,165,.3); }
@@ -424,7 +506,7 @@
 
     .entry-divider { width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0; align-self: stretch; }
 
-    .entry-body { flex: 1; min-width: 0; padding: 11px 10px 11px 12px; }
+    .entry-body { flex: 1; min-width: 0; padding: 11px 10px 11px 12px; display: flex; flex-direction: column; justify-content: center; }
     .entry-code { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
     .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; letter-spacing: .1px; }
     .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
@@ -525,25 +607,50 @@
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     .dialog-backdrop {
       position: fixed; inset: 0; z-index: 800;
-      background: rgba(0,0,0,.7);
+      background: rgba(0,0,0,.75);
       display: flex; align-items: center; justify-content: center;
       padding: 24px; animation: fadeIn .15s;
+      backdrop-filter: blur(6px);
     }
     .dialog-box {
-      background: linear-gradient(160deg, rgba(18,24,40,1) 0%, rgba(14,19,32,1) 100%);
-      border: 1px solid var(--border2);
-      border-radius: 18px; padding: 22px 20px;
+      background: linear-gradient(160deg, rgba(20,27,46,1) 0%, rgba(13,18,32,1) 100%);
+      border: 1px solid rgba(59,142,248,.18);
+      border-radius: 20px; padding: 26px 22px 22px;
       max-width: 320px; width: 100%;
-      box-shadow: 0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.03) inset;
+      box-shadow: 0 32px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.04) inset, 0 0 40px rgba(59,142,248,.05);
+      animation: dialogPop .22s cubic-bezier(.34,1.4,.64,1);
     }
-    .dialog-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
-    .dialog-box p  { font-size: 13px; color: var(--text2); margin-bottom: 18px; line-height: 1.5; }
+    @keyframes dialogPop { from{opacity:0;transform:scale(.93) translateY(6px)} to{opacity:1;transform:none} }
+    .dialog-icon-wrap {
+      width: 44px; height: 44px; border-radius: 13px; margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dialog-icon-wrap.safe {
+      background: linear-gradient(135deg, rgba(59,142,248,.2) 0%, rgba(124,58,237,.15) 100%);
+      border: 1px solid rgba(59,142,248,.25);
+      box-shadow: 0 0 20px rgba(59,142,248,.1);
+    }
+    .dialog-icon-wrap.warn {
+      background: linear-gradient(135deg, rgba(245,158,11,.2) 0%, rgba(180,83,9,.12) 100%);
+      border: 1px solid rgba(245,158,11,.3);
+      box-shadow: 0 0 20px rgba(245,158,11,.1);
+    }
+    .dialog-icon-wrap.danger {
+      background: linear-gradient(135deg, rgba(248,81,73,.18) 0%, rgba(185,28,28,.12) 100%);
+      border: 1px solid rgba(248,81,73,.25);
+      box-shadow: 0 0 20px rgba(248,81,73,.1);
+    }
+    .dialog-icon-wrap svg { width: 20px; height: 20px; }
+    .dialog-box h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; text-align: center; letter-spacing: -.2px; }
+    .dialog-box p  { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; text-align: center; }
+    .dialog-divider { height: 1px; background: var(--border); margin: 0 0 16px; }
     .dialog-btns { display: flex; gap: 8px; }
-    .dialog-btns button { flex: 1; padding: 11px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+    .dialog-btns button { flex: 1; padding: 12px; border-radius: 11px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .15s, transform .1s; }
     .dialog-btns button:hover { opacity: .85; }
+    .dialog-btns button:active { transform: scale(.97); }
     .d-cancel  { background: var(--card2); color: var(--text2); border: 1px solid var(--border2) !important; }
     .d-confirm { background: var(--danger); color: #fff; }
-    .d-confirm.safe { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+    .d-confirm.safe { background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 4px 16px rgba(59,142,248,.3); }
 
     /* filename dialog */
     .filename-dialog .dialog-box { max-width: 340px; }
@@ -602,9 +709,32 @@
   <div class="setup-card">
     <div class="setup-logo">
       <div class="dot">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="11" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="1" y="11" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="white" opacity=".4"/></svg>
+        <!-- Premium flat penguin logo -->
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- body -->
+          <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
+          <!-- belly -->
+          <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
+          <!-- head -->
+          <ellipse cx="11" cy="6.5" rx="4" ry="4" fill="white" opacity=".95"/>
+          <!-- eye left -->
+          <circle cx="9.2" cy="5.8" r="1" fill="#1a2540"/>
+          <circle cx="9.5" cy="5.5" r=".3" fill="white"/>
+          <!-- eye right -->
+          <circle cx="12.8" cy="5.8" r="1" fill="#1a2540"/>
+          <circle cx="13.1" cy="5.5" r=".3" fill="white"/>
+          <!-- beak -->
+          <path d="M10.2 7.8 L11 9 L11.8 7.8 Q11 7.3 10.2 7.8Z" fill="#f59e0b"/>
+          <!-- feet -->
+          <ellipse cx="8.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
+          <ellipse cx="13.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
+          <!-- wing left -->
+          <path d="M5 11 Q3 13 4.5 16 Q6 12.5 5 11Z" fill="white" opacity=".9"/>
+          <!-- wing right -->
+          <path d="M17 11 Q19 13 17.5 16 Q16 12.5 17 11Z" fill="white" opacity=".9"/>
+        </svg>
       </div>
-      <h2>Mapeo</h2>
+      <h2>GDSMap</h2>
     </div>
     <p id="setup-msg">Inicializando sistema…</p>
     <div class="setup-progress-wrap">
@@ -614,12 +744,12 @@
       <div class="setup-steps">
         <div class="setup-step active" id="step-vl">
           <span class="step-dot"></span>
-          <span class="step-label">Cargando variables logísticas…</span>
+          <span class="step-label">Variables logísticas</span>
           <span class="step-icon" id="step-vl-icon"></span>
         </div>
         <div class="setup-step" id="step-ref">
           <span class="step-dot"></span>
-          <span class="step-label">Cargando referencias…</span>
+          <span class="step-label">Catálogo de referencias</span>
           <span class="step-icon" id="step-ref-icon"></span>
         </div>
       </div>
@@ -628,7 +758,7 @@
     <div class="load-row" id="load-ref"><span class="load-icon">·</span><span class="load-label">referencia.xlsx</span></div>
     <div id="manual-fallback" style="display:none; margin-top:14px;">
       <p style="font-size:12px;color:var(--warn);margin-bottom:12px;line-height:1.5;">
-        No se encontraron los archivos automáticamente.<br>Seleccionálos manualmente:
+        No se detectaron archivos en el servidor.<br>Seleccionalos manualmente:
       </p>
       <div class="file-row">
         <span class="file-label-txt">Variables Logísticas</span>
@@ -646,7 +776,7 @@
           <input type="file" id="file-ref" accept=".xlsx,.xls" />
         </label>
       </div>
-      <button class="btn-primary" id="btn-start" disabled>Comenzar</button>
+      <button class="btn-primary" id="btn-start" disabled>Iniciar</button>
     </div>
   </div>
 </div>
@@ -655,9 +785,23 @@
 <header>
   <div class="header-left">
     <div class="h-dot">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x=".5" y=".5" width="5" height="5" rx="1.2" fill="white" opacity=".9"/><rect x="8.5" y=".5" width="5" height="5" rx="1.2" fill="white" opacity=".9"/><rect x=".5" y="8.5" width="5" height="5" rx="1.2" fill="white" opacity=".9"/><rect x="8.5" y="8.5" width="5" height="5" rx="1.2" fill="white" opacity=".35"/></svg>
+      <!-- Premium flat penguin logo small -->
+      <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
+        <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
+        <ellipse cx="11" cy="6.5" rx="4" ry="4" fill="white" opacity=".95"/>
+        <circle cx="9.2" cy="5.8" r="1" fill="#1a2540"/>
+        <circle cx="9.5" cy="5.5" r=".3" fill="white"/>
+        <circle cx="12.8" cy="5.8" r="1" fill="#1a2540"/>
+        <circle cx="13.1" cy="5.5" r=".3" fill="white"/>
+        <path d="M10.2 7.8 L11 9 L11.8 7.8 Q11 7.3 10.2 7.8Z" fill="#f59e0b"/>
+        <ellipse cx="8.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
+        <ellipse cx="13.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
+        <path d="M5 11 Q3 13 4.5 16 Q6 12.5 5 11Z" fill="white" opacity=".9"/>
+        <path d="M17 11 Q19 13 17.5 16 Q16 12.5 17 11Z" fill="white" opacity=".9"/>
+      </svg>
     </div>
-    <h1>Mapeo</h1>
+    <h1>GDSMap</h1>
   </div>
   <div class="header-right">
     <button class="btn-icon" onclick="exportXLSX()">
@@ -667,9 +811,8 @@
       Exportar
     </button>
     <button class="btn-icon" id="btn-settings" onclick="toggleSettings()">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
-        <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-        <path d="M17.2 10c0-.34-.03-.68-.08-1.01l2.17-1.7a.52.52 0 0 0 .12-.65l-2.05-3.55a.51.51 0 0 0-.63-.23l-2.56 1.03a7.5 7.5 0 0 0-1.74-1l-.38-2.72A.5.5 0 0 0 11.5 0h-3a.5.5 0 0 0-.5.42L7.62 3.14a7.5 7.5 0 0 0-1.74 1L3.32 3.11a.51.51 0 0 0-.63.23L.64 6.9a.5.5 0 0 0 .12.64L2.93 9.2A7.42 7.42 0 0 0 2.85 10c0 .34.03.68.08 1.01L.76 12.71a.52.52 0 0 0-.12.65l2.05 3.55c.13.23.4.32.63.23l2.56-1.03c.54.38 1.13.7 1.74 1l.38 2.72a.5.5 0 0 0 .5.42h3a.5.5 0 0 0 .5-.42l.38-2.72a7.5 7.5 0 0 0 1.74-1l2.56 1.03c.23.09.5 0 .63-.23l2.05-3.55a.5.5 0 0 0-.12-.64L17.12 11c.05-.33.08-.66.08-1Z" stroke-width="1.4"/>
+      <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;flex-shrink:0;">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/>
       </svg>
     </button>
     <button class="btn-icon" id="btn-fullscreen" onclick="toggleFullscreen()" title="Pantalla completa">
@@ -701,12 +844,12 @@
             <rect x="6" y="6" width="8" height="8" rx="1.5" stroke-width="1.4" opacity=".5"/>
           </svg>
         </div>
-        <span class="scanner-off-label">Tocá para activar la cámara</span>
+        <span class="scanner-off-label">Toque para activar la cámara</span>
       </div>
       <div class="scanner-toggle-hint" id="scanner-toggle-hint" style="display:none"></div>
     </div>
     <div class="manual-row">
-      <input class="manual-input" id="manual-input" type="text" placeholder="Referencia o DUN…" inputmode="numeric" autocomplete="off" />
+      <input class="manual-input" id="manual-input" type="text" placeholder="Ingresar referencia manualmente" inputmode="numeric" autocomplete="off" maxlength="20" />
       <button class="btn-go" onclick="processManual()">Buscar</button>
     </div>
   </div>
@@ -777,8 +920,8 @@
             <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" opacity=".3"/>
           </svg>
         </div>
-        <p>Escaneá o ingresá un código para comenzar</p>
-        <p class="es-hint">Los registros aparecerán acá</p>
+        <p>Escanee o ingrese una referencia para comenzar</p>
+        <p class="es-hint">Los registros aparecerán aquí</p>
       </div>
     </div>
   </div>
@@ -879,7 +1022,7 @@ async function autoLoad() {
     setStepState('step-ref','step-ref-icon','done'); setProgressFill(100); refOk = true;
   } catch(e) { setStepState('step-ref','step-ref-icon','fail'); setProgressFill(100); }
   if (vlOk && refOk) {
-    document.getElementById('setup-msg').textContent = 'Listo.';
+    document.getElementById('setup-msg').textContent = 'Sistema listo.';
     setTimeout(() => {
       const overlay = document.getElementById('setup-overlay');
       overlay.classList.add('fade-out');
@@ -888,7 +1031,7 @@ async function autoLoad() {
       startScanner();
     }, 400);
   } else {
-    document.getElementById('setup-msg').textContent = 'No se encontraron los archivos en el servidor.';
+    document.getElementById('setup-msg').textContent = 'Archivos no encontrados en el servidor.';
     document.getElementById('manual-fallback').style.display = 'block';
     setupManualListeners();
   }
@@ -1037,7 +1180,6 @@ function processCode(code) {
 
   if (!product) {
     soundNotFound();
-    showToast(`No encontrado: ${trimmed}`, 'error');
   } else {
     soundFound();
     ['unidades','rotura','vencido','otro'].forEach(t => {
@@ -1061,15 +1203,38 @@ function renderProductCard(product, rawCode) {
   if (!product) {
     card.className = 'product-card visible not-found';
     card.style.opacity = '0';
-    card.innerHTML = `<div class="pc-err">No encontrado: ${rawCode}</div>`;
+    card.innerHTML = `
+      <div class="pc-cross">
+        <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round">
+          <path d="M3 3l8 8M11 3l-8 8"/>
+        </svg>
+      </div>
+      <div class="pc-info">
+        <div class="pc-err">Referencia no encontrada:</div>
+        <div class="pc-ref" style="color:rgba(248,81,73,.7);font-weight:600;word-break:break-all">${rawCode}</div>
+      </div>`;
     requestAnimationFrame(() => { card.style.opacity = '1'; });
     return;
   }
+  // Pausar escáner al encontrar producto
+  if (scannerActive) stopScanner();
   card.className = 'product-card visible found';
   card.style.opacity = '0';
   card.innerHTML = `
-    <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
-    <div class="pc-ref">${product.ref || rawCode}${product.ean ? ' · ' + product.ean : ''}</div>`;
+    <div class="pc-check">
+      <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 7l3 3 6-6"/>
+      </svg>
+    </div>
+    <div class="pc-info">
+      <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
+      <div class="pc-ref">${product.ref || rawCode}${product.ean ? ' · ' + product.ean : ''}</div>
+    </div>
+    <button class="pc-close" onclick="dismissProductCard()" title="Cerrar">
+      <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M2 2l6 6M8 2l-6 6"/>
+      </svg>
+    </button>`;
   requestAnimationFrame(() => requestAnimationFrame(() => { card.style.opacity = '1'; }));
 }
 
@@ -1172,21 +1337,22 @@ function entryKey(ref, tipo, subtipo, fechaVenc, comentario) {
 
 function confirmEntry() {
   if (!currentProduct || !currentTipo) return;
-  if (currentTipo === 'rotura' && !currentRotura) { showToast('Seleccioná IDL o RAPPI', 'warn'); return; }
+  if (currentTipo === 'rotura' && !currentRotura) { showToast('Seleccione IDL o RAPPI', 'warn'); return; }
 
-  const qty        = Math.max(1, parseInt(document.getElementById('input-qty').value) || 1);
-  const fechaVenc  = currentTipo === 'unidades' ? document.getElementById('input-fecha').value : null;
-  const subtipo    = currentTipo === 'rotura'   ? currentRotura : null;
-  const comentario = currentTipo === 'otro'     ? document.getElementById('input-comentario').value.trim() : null;
+  if (currentTipo === 'unidades') {
+    const dd = document.getElementById('seg-dd').value;
+    const mm = document.getElementById('seg-mm').value;
+    const aa = document.getElementById('seg-aa').value;
+    if (!dd || !mm || !aa || aa.length < 4) {
+      showToast('Complete la fecha de vencimiento', 'warn');
+      if (!dd) document.getElementById('seg-dd').focus();
+      else if (!mm) document.getElementById('seg-mm').focus();
+      else document.getElementById('seg-aa').focus();
+      return;
+    }
+  }
 
-  const tipoLabel = TIPO_LABELS[currentTipo] || currentTipo;
-  const refLabel  = currentProduct.ref || currentProduct.dun || '';
-  const detalle   = subtipo ? ` · ${subtipo}` : fechaVenc ? ` · Venc. ${fechaVenc}` : comentario ? ` · ${comentario}` : '';
-  showConfirmDialog(
-    '¿Confirmar registro?',
-    `${refLabel} — ${tipoLabel}${detalle} — Cant: ${qty}`,
-    _doConfirmEntry, true
-  );
+  _doConfirmEntry();
 }
 
 function _doConfirmEntry() {
@@ -1201,11 +1367,9 @@ function _doConfirmEntry() {
   if (existing) {
     existing.qty += qty;
     saveEntries(); renderList(); soundConfirm();
-    showToast(`Sumado: ${existing.ref} · ${existing.qty}`, 'success');
   } else {
     entries.unshift({ id:uid(), ts:new Date().toISOString(), ref:currentProduct.ref, dun:currentProduct.dun, desc:currentProduct.desc, tipo:currentTipo, subtipo, fechaVenc, comentario, qty });
     saveEntries(); renderList(); soundConfirm();
-    showToast(`${currentProduct.ref} · ${qty}`, 'success');
   }
   // Reset
   currentProduct = null; currentTipo = null; currentRotura = null;
@@ -1216,10 +1380,24 @@ function _doConfirmEntry() {
   clearSegDate();
   document.getElementById('input-comentario').value = '';
   lastCode = ''; lastCodeTime = 0;
+  // Reanudar escáner
+  if (!scannerActive) startScanner();
 }
 
 document.getElementById('input-qty').addEventListener('keydown', e => { if (e.key === 'Enter') confirmEntry(); });
 document.getElementById('input-comentario').addEventListener('keydown', e => { if (e.key === 'Enter') confirmEntry(); });
+
+function dismissProductCard() {
+  currentProduct = null; currentTipo = null; currentRotura = null;
+  document.getElementById('product-card').className = 'product-card';
+  document.getElementById('product-card').innerHTML = '';
+  setActionButtonsEnabled(false);
+  document.getElementById('input-qty').value = '';
+  clearSegDate();
+  document.getElementById('input-comentario').value = '';
+  lastCode = ''; lastCodeTime = 0;
+  if (!scannerActive) startScanner();
+}
 
 // ═══════════════════════════════════════════════
 //  RENDER LIST
@@ -1232,7 +1410,7 @@ const QTY_ICON  = `<span class="qty-icon"><svg viewBox="0 0 8 8" fill="none" str
 function renderList() {
   const list = document.getElementById('entries-list');
   if (!entries.length) {
-    list.innerHTML = `<div class="empty-state"><div class="es-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" opacity=".3"/></svg></div><p>Escaneá o ingresá un código para comenzar</p><p class="es-hint">Los registros aparecerán acá</p></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="es-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" opacity=".3"/></svg></div><p>Escanee o ingrese una referencia para comenzar</p><p class="es-hint">Los registros aparecerán aquí</p></div>`;
     return;
   }
   list.innerHTML = entries.map(e => `
@@ -1264,7 +1442,7 @@ function renderList() {
 // ═══════════════════════════════════════════════
 function deleteEntry(id) {
   const e = entries.find(x => x.id === id); if (!e) return;
-  showConfirmDialog('Eliminar registro', `¿Eliminar ${e.ref||e.dun} · ${TIPO_LABEL[e.tipo]}?`, () => {
+  showConfirmDialog('Eliminar registro', `¿Desea eliminar ${e.ref||e.dun} · ${TIPO_LABEL[e.tipo]}?`, () => {
     entries = entries.filter(x => x.id !== id);
     saveEntries(); renderList(); showToast('Registro eliminado', 'warn');
   });
@@ -1369,27 +1547,32 @@ function confirmSaveEdit() {
   const fechaVenc  = tipo==='unidades' ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
   const comentario = tipo==='otro'     ? (document.getElementById('edit-comentario') ? document.getElementById('edit-comentario').value.trim() : null) : null;
   const qty        = Math.max(1, parseInt(document.getElementById('edit-qty') ? document.getElementById('edit-qty').value : 1) || 1);
+
+  if (tipo === 'unidades') {
+    const dd = (document.getElementById('edit-seg-dd')||{}).value||'';
+    const mm = (document.getElementById('edit-seg-mm')||{}).value||'';
+    const aa = (document.getElementById('edit-seg-aa')||{}).value||'';
+    if (!dd || !mm || !aa || aa.length < 4) {
+      showToast('Complete la fecha de vencimiento', 'warn');
+      if (!dd && document.getElementById('edit-seg-dd')) document.getElementById('edit-seg-dd').focus();
+      else if (!mm && document.getElementById('edit-seg-mm')) document.getElementById('edit-seg-mm').focus();
+      else if (document.getElementById('edit-seg-aa')) document.getElementById('edit-seg-aa').focus();
+      return;
+    }
+  }
   const tipoLabel  = TIPO_LABEL[tipo] || tipo;
   const e          = entries.find(x => x.id === editingId);
   if (!e || !tipo) return;
-  const detalle = subtipo ? ` · ${subtipo}` : fechaVenc ? ` · Venc. ${fechaVenc}` : comentario ? ` · ${comentario}` : '';
-  showConfirmDialog(
-    '¿Confirmar cambios?',
-    `${e.ref||e.dun} — ${tipoLabel}${detalle} — Cant: ${qty}`,
-    () => {
-      const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
-      const collision = entries.find(x => x.id !== editingId && entryKey(x.ref,x.tipo,x.subtipo,x.fechaVenc,x.comentario) === newKey);
-      closeEditModal();
-      if (collision) {
-        collision.qty += qty; entries = entries.filter(x => x.id !== e.id);
-        saveEntries(); renderList(); showToast(`Combinado: ${collision.ref} · ${collision.qty}`, 'success');
-      } else {
-        e.tipo=tipo; e.subtipo=subtipo; e.fechaVenc=fechaVenc; e.comentario=comentario; e.qty=qty;
-        saveEntries(); renderList(); showToast('Guardado', 'success');
-      }
-    },
-    true
-  );
+  const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
+  const collision = entries.find(x => x.id !== editingId && entryKey(x.ref,x.tipo,x.subtipo,x.fechaVenc,x.comentario) === newKey);
+  closeEditModal();
+  if (collision) {
+    collision.qty += qty; entries = entries.filter(x => x.id !== e.id);
+    saveEntries(); renderList(); showToast(`Combinado: ${collision.ref} · ${collision.qty}`, 'success');
+  } else {
+    e.tipo=tipo; e.subtipo=subtipo; e.fechaVenc=fechaVenc; e.comentario=comentario; e.qty=qty;
+    saveEntries(); renderList(); showToast('Guardado', 'success');
+  }
 }
 function editTipoChange() {
   const tipo = document.getElementById('edit-tipo').value;
@@ -1422,11 +1605,26 @@ function closeEditIfOutside(e) { if (e.target.id === 'edit-modal') closeEditModa
 //  CONFIRM DIALOG
 // ═══════════════════════════════════════════════
 let confirmCallback = null;
-function showConfirmDialog(title, msg, cb, safe=false) {
+function showConfirmDialog(title, msg, cb, safe=false, warn=false) {
   confirmCallback = cb;
+  let iconSvg, iconClass;
+  if (warn) {
+    iconClass = 'warn';
+    iconSvg = `<svg viewBox="0 0 20 20" fill="none" stroke="#f59e0b" stroke-width="1.8"><path d="M10 7v4M10 14.5v.5M4.9 17h10.2c1.4 0 2.3-1.5 1.6-2.7L11.6 4.3a1.85 1.85 0 00-3.2 0L3.3 14.3C2.6 15.5 3.5 17 4.9 17z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  } else if (safe) {
+    iconClass = 'safe';
+    iconSvg = `<svg viewBox="0 0 20 20" fill="none" stroke="#93c5fd" stroke-width="1.8"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  } else {
+    iconClass = 'danger';
+    iconSvg = `<svg viewBox="0 0 20 20" fill="none" stroke="#fca5a5" stroke-width="1.8"><path d="M10 7v4M10 14.5v.5M4.9 17h10.2c1.4 0 2.3-1.5 1.6-2.7L11.6 4.3a1.85 1.85 0 00-3.2 0L3.3 14.3C2.6 15.5 3.5 17 4.9 17z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
   document.body.insertAdjacentHTML('beforeend', `
     <div class="dialog-backdrop" id="confirm-dialog">
-      <div class="dialog-box"><h3>${title}</h3><p>${msg}</p>
+      <div class="dialog-box">
+        <div class="dialog-icon-wrap ${iconClass}">${iconSvg}</div>
+        <h3>${title}</h3>
+        <p>${msg}</p>
+        <div class="dialog-divider"></div>
         <div class="dialog-btns">
           <button class="d-cancel" onclick="closeConfirm(false)">Cancelar</button>
           <button class="d-confirm${safe?' safe':''}" onclick="closeConfirm(true)">Confirmar</button>
@@ -1459,7 +1657,7 @@ function exportXLSX() {
   document.body.insertAdjacentHTML('beforeend', `
     <div class="dialog-backdrop filename-dialog" id="filename-dialog">
       <div class="dialog-box">
-        <h3>Nombre del archivo</h3><p>Se guardará como .xlsx</p>
+        <h3>Nombre del archivo</h3><p>El archivo se exportará en formato .xlsx</p>
         <input class="filename-input" id="filename-input" type="text" value="mapeo_${date}" autocomplete="off" />
         <div class="dialog-btns">
           <button class="d-cancel" onclick="closeFilenameDialog()">Cancelar</button>
@@ -1534,7 +1732,7 @@ function toggleSettings() {
 function closeSettingsIfOutside(e) { if (e.target.id === 'settings-panel-wrap') document.getElementById('settings-panel-wrap').remove(); }
 function confirmClearAll() {
   const p = document.getElementById('settings-panel-wrap'); if (p) p.remove();
-  showConfirmDialog('Borrar todos los registros', '¿Estás seguro? Esta acción no se puede deshacer.', () => {
+  showConfirmDialog('Borrar todos los registros', 'Esta acción no se puede deshacer. Todos los registros serán eliminados.', () => {
     entries = []; saveEntries(); renderList(); showToast('Registros eliminados', 'warn');
   });
 }
@@ -1548,10 +1746,10 @@ function _backGuardHandler() {
   if (!_backGuardActive) return;
   history.pushState(null, '', location.href);
   soundAlert();
-  showConfirmDialog('¿Salir de la app?',
-    'Los registros no exportados se conservan en este dispositivo, pero si limpias el navegador se perderán.',
+  showConfirmDialog('Salir de la aplicación',
+    'Los registros no exportados se conservan en este dispositivo. Si limpia el navegador, se perderán.',
     () => { _backGuardActive = false; window.removeEventListener('popstate', _backGuardHandler); history.go(-2); },
-    true);
+    false, true);
 }
 window.addEventListener('popstate', _backGuardHandler);
 
@@ -1604,7 +1802,7 @@ async function startScanner() {
 
       scannerActive = true;
       if (wrap) { wrap.classList.remove('scanner-off'); wrap.classList.add('scanner-active'); }
-      if (hint) hint.textContent = 'Tocá para pausar';
+      if (hint) hint.textContent = 'Toque para pausar';
 
       const canvas = document.createElement('canvas');
       const ctx2d  = canvas.getContext('2d');
@@ -1632,7 +1830,7 @@ async function startScanner() {
       return;
     } catch(e) {
       if (wrap) wrap.classList.add('scanner-off');
-      if (hint) hint.textContent = 'Tocá para activar';
+      if (hint) hint.textContent = 'Toque para activar';
       return;
     }
   }
@@ -1653,13 +1851,13 @@ async function startScanner() {
   }, err => {
     if (err) {
       if (wrap) wrap.classList.add('scanner-off');
-      if (hint) hint.textContent = 'Tocá para activar';
+      if (hint) hint.textContent = 'Toque para activar';
       return;
     }
     Quagga.start();
     scannerActive = true;
     if (wrap) { wrap.classList.remove('scanner-off'); wrap.classList.add('scanner-active'); }
-    if (hint) hint.textContent = 'Tocá para pausar';
+    if (hint) hint.textContent = 'Toque para pausar';
     Quagga.onDetected(result => {
       const code = result && result.codeResult && result.codeResult.code; if (!code) return;
       const errs = (result.codeResult.decodedCodes||[]).filter(x=>x.error!==undefined).map(x=>x.error);
@@ -1683,7 +1881,7 @@ function stopScanner() {
   const wrap = document.getElementById('scanner-wrap');
   if (wrap) { wrap.classList.add('scanner-off'); wrap.classList.remove('scanner-active'); }
   const hint = document.getElementById('scanner-toggle-hint');
-  if (hint) hint.textContent = 'Tocá para activar';
+  if (hint) hint.textContent = 'Toque para activar';
 }
 
 function toggleScanner() {
@@ -1691,7 +1889,7 @@ function toggleScanner() {
     stopScanner();
   } else {
     const hint = document.getElementById('scanner-toggle-hint');
-    if (hint) hint.textContent = 'Iniciando…';
+    if (hint) hint.textContent = 'Iniciando...';
     startScanner();
   }
 }
