@@ -197,9 +197,9 @@
       display: flex; align-items: center; justify-content: center;
       pointer-events: none;
     }
-    /* scan-line hidden when off */
+    /* scan-frame and scan-line hidden when off */
     .scanner-wrap.scanner-off .scan-line { display: none; }
-    .scanner-wrap.scanner-off .scan-frame { border-color: var(--border); box-shadow: none; }
+    .scanner-wrap.scanner-off .scanner-overlay { display: none; }
     .scan-frame {
       width: 62%; height: 52%;
       border: 1.5px solid var(--accent); border-radius: 8px;
@@ -665,7 +665,7 @@
         </div>
         <span class="scanner-off-label">Tocá para activar la cámara</span>
       </div>
-      <div class="scanner-toggle-hint" id="scanner-toggle-hint">Tocá para pausar</div>
+      <div class="scanner-toggle-hint" id="scanner-toggle-hint" style="display:none"></div>
     </div>
     <div class="manual-row">
       <input class="manual-input" id="manual-input" type="text" placeholder="Referencia o DUN…" inputmode="numeric" autocomplete="off" />
@@ -1475,9 +1475,8 @@ async function startScanner() {
           try {
             const barcodes = await _nativeDetector.detect(canvas);
             for (const b of barcodes) {
-              const code = b.rawValue; const now = Date.now();
-              if (code && !(code === lastCode && now - lastCodeTime < 2000)) {
-                lastCode = code; lastCodeTime = now;
+              const code = b.rawValue;
+              if (code) {
                 const sf = document.querySelector('.scan-frame');
                 if (sf) { sf.style.borderColor='var(--success)'; setTimeout(()=>{ sf.style.borderColor='var(--accent)'; },300); }
                 processCode(code);
