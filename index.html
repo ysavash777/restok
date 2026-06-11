@@ -711,26 +711,17 @@
       <div class="dot">
         <!-- Premium flat penguin logo -->
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- body -->
           <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
-          <!-- belly -->
           <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
-          <!-- head -->
           <ellipse cx="11" cy="6.5" rx="4" ry="4" fill="white" opacity=".95"/>
-          <!-- eye left -->
           <circle cx="9.2" cy="5.8" r="1" fill="#1a2540"/>
           <circle cx="9.5" cy="5.5" r=".3" fill="white"/>
-          <!-- eye right -->
           <circle cx="12.8" cy="5.8" r="1" fill="#1a2540"/>
           <circle cx="13.1" cy="5.5" r=".3" fill="white"/>
-          <!-- beak -->
           <path d="M10.2 7.8 L11 9 L11.8 7.8 Q11 7.3 10.2 7.8Z" fill="#f59e0b"/>
-          <!-- feet -->
           <ellipse cx="8.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
           <ellipse cx="13.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
-          <!-- wing left -->
           <path d="M5 11 Q3 13 4.5 16 Q6 12.5 5 11Z" fill="white" opacity=".9"/>
-          <!-- wing right -->
           <path d="M17 11 Q19 13 17.5 16 Q16 12.5 17 11Z" fill="white" opacity=".9"/>
         </svg>
       </div>
@@ -785,7 +776,6 @@
 <header>
   <div class="header-left">
     <div class="h-dot">
-      <!-- Premium flat penguin logo small -->
       <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
         <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
@@ -1078,11 +1068,16 @@ function lookupProduct(code) {
     const descCol = findCol(row, ['descripcion','description','desc','nombre']);
     const eanCol  = findCol(row, ['ean','ean13','codigoean','codigo ean']);
     const refVal = refCol ? String(row[refCol] ?? '').trim() : '';
-    const dunVal = dunCol ? String(row[dunCol] ?? '').trim() : '';
-    if ((refVal && refVal === trimmed) || (dunVal && dunVal === trimmed)) {
+    const dunRaw = dunCol ? String(row[dunCol] ?? '').trim() : '';
+
+    // DUN puede ser "7794000008540:1, 67794000008542:80" — comparar solo antes de ":"
+    const dunCodes = dunRaw.split(',').map(s => s.split(':')[0].trim()).filter(Boolean);
+    const dunMatch = dunCodes.includes(trimmed);
+
+    if ((refVal && refVal === trimmed) || dunMatch) {
       return {
-        code: trimmed, matchType: dunVal === trimmed ? 'DUN' : 'REF',
-        ref: refVal, dun: dunVal,
+        code: trimmed, matchType: dunMatch ? 'DUN' : 'REF',
+        ref: refVal, dun: dunRaw,
         ean: eanCol ? String(row[eanCol] ?? '').trim() : '',
         desc: descCol ? String(row[descCol] ?? '') : '',
       };
@@ -1674,22 +1669,81 @@ function doExport() {
   const inp = document.getElementById('filename-input');
   const name = (inp ? inp.value.trim() : '') || `mapeo_${new Date().toISOString().slice(0,10)}`;
   closeFilenameDialog();
-  const tabs = [
-    { key: e => e.tipo==='rotura' && e.subtipo==='RAPPI', name:'Rotura RAPPI' },
-    { key: e => e.tipo==='rotura' && e.subtipo==='IDL',   name:'Rotura IDL' },
-    { key: e => e.tipo==='vencido',                       name:'Vencido' },
-    { key: e => e.tipo==='otro',                          name:'Otro' },
-    { key: e => e.tipo==='unidades',                      name:'Unidades' },
-  ];
-  const headers = ['Referencia','DUN','Descripción','Cantidad','Fecha Venc.','Subtipo','Comentario','Timestamp'];
-  const wb = XLSX.utils.book_new();
-  for (const tab of tabs) {
-    const rows = entries.filter(tab.key);
-    const data = [headers, ...rows.map(e => [e.ref||'',e.dun||'',e.desc||'',e.qty,e.fechaVenc||'',e.subtipo||'',e.comentario||'',e.ts])];
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    ws['!cols'] = [20,16,40,10,14,10,30,22].map(w => ({wch:w}));
-    XLSX.utils.book_append_sheet(wb, ws, tab.name);
+
+  const headerFill  = { patternType:'solid', fgColor:{ rgb:'1E3A5F' } };
+  const headerFont  = { bold:true, color:{ rgb:'FFFFFF' }, sz:11 };
+  const headerAlign = { horizontal:'center', vertical:'center', wrapText:true };
+  const cellAlign   = { horizontal:'center', vertical:'center' };
+  const border      = { style:'thin', color:{ rgb:'B0C4DE' } };
+  const allBorders  = { top:border, bottom:border, left:border, right:border };
+
+  function hCell(v) {
+    return { v, t:'s', s:{ fill:headerFill, font:headerFont, alignment:headerAlign, border:allBorders } };
   }
+  function dCell(v, t='s') {
+    return { v, t, s:{ alignment:cellAlign, border:allBorders } };
+  }
+  function buildSheet(rows, cols) {
+    // cols: array of { header, fn, type }
+    const ws = {};
+    const R = rows.length;
+    const C = cols.length;
+    cols.forEach((col, ci) => {
+      ws[XLSX.utils.encode_cell({ r:0, c:ci })] = hCell(col.header);
+    });
+    rows.forEach((e, ri) => {
+      cols.forEach((col, ci) => {
+        ws[XLSX.utils.encode_cell({ r:ri+1, c:ci })] = dCell(col.fn(e), col.type||'s');
+      });
+    });
+    ws['!ref']  = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:R,c:C-1} });
+    ws['!cols'] = cols.map(c => ({ wch: c.w||18 }));
+    ws['!rows'] = [{ hpt:22 }];
+    return ws;
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  const unidades = entries.filter(e => e.tipo==='unidades');
+  if (unidades.length) XLSX.utils.book_append_sheet(wb, buildSheet(unidades, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+    { header:'Fecha Venc.',   fn: e => e.fechaVenc||'', w:14 },
+  ]), 'Unidades');
+
+  const roturaRappi = entries.filter(e => e.tipo==='rotura' && e.subtipo==='RAPPI');
+  if (roturaRappi.length) XLSX.utils.book_append_sheet(wb, buildSheet(roturaRappi, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+    { header:'Responsable',   fn: e => e.subtipo||'',   w:14 },
+  ]), 'Rotura RAPPI');
+
+  const roturaIdl = entries.filter(e => e.tipo==='rotura' && e.subtipo==='IDL');
+  if (roturaIdl.length) XLSX.utils.book_append_sheet(wb, buildSheet(roturaIdl, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+    { header:'Responsable',   fn: e => e.subtipo||'',   w:14 },
+  ]), 'Rotura IDL');
+
+  const vencido = entries.filter(e => e.tipo==='vencido');
+  if (vencido.length) XLSX.utils.book_append_sheet(wb, buildSheet(vencido, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+  ]), 'Vencido');
+
+  const otro = entries.filter(e => e.tipo==='otro');
+  if (otro.length) XLSX.utils.book_append_sheet(wb, buildSheet(otro, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+    { header:'Comentario',    fn: e => e.comentario||'',w:30 },
+  ]), 'Otro');
+
+  if (!wb.SheetNames.length) { showToast('No hay registros para exportar', 'warn'); return; }
   XLSX.writeFile(wb, name.endsWith('.xlsx') ? name : name + '.xlsx');
   soundExport();
 }
