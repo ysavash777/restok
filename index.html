@@ -198,6 +198,16 @@
     .scanner-wrap {
       position: relative; border-radius: var(--radius); overflow: hidden;
       background: #000; aspect-ratio: 16/9; max-height: 220px;
+      cursor: pointer; user-select: none;
+    }
+    .scanner-wrap.scanner-off { background: #0a0c10; }
+    .scanner-toggle-hint {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 6px;
+      font-size: 10px; font-weight: 600; color: rgba(255,255,255,.6);
+      padding: 3px 7px; pointer-events: none; letter-spacing: .2px;
+      transition: opacity .3s;
     }
     #interactive { width: 100%; height: 100%; }
     #interactive video { width: 100%; height: 100%; object-fit: cover; }
@@ -347,6 +357,23 @@
     }
     .filename-input:focus { border-color: var(--accent); }
 
+    .date-seg-wrap {
+      flex: 1; display: flex; align-items: center; gap: 2px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 9px; padding: 0 10px; height: 38px;
+      transition: border-color .15s;
+    }
+    .date-seg-wrap:focus-within { border-color: var(--accent); }
+    .date-seg-part {
+      background: transparent; border: none; outline: none;
+      color: var(--text); font-family: var(--font);
+      font-size: 14px; font-weight: 600; text-align: center;
+      width: 28px; padding: 0;
+    }
+    .date-seg-part::placeholder { color: var(--muted); font-weight: 400; }
+    .date-seg-part.date-seg-year { width: 42px; }
+    .date-seg-sep { color: var(--muted); font-size: 14px; font-weight: 600; user-select: none; }
+
     .sub-row { display: none; gap: 6px; margin-bottom: 6px; align-items: center; }
     .sub-row.visible { display: flex; }
     .sub-label { font-size: 11px; font-weight: 700; color: var(--muted); flex-shrink: 0; text-transform: uppercase; letter-spacing: .3px; }
@@ -425,7 +452,24 @@
     .e-chip.tipo-otro     { background: rgba(125,133,144,.18);color: var(--text); }
     .e-chip.sub-idl       { background: rgba(88,166,255,.18); color: var(--idl); }
     .e-chip.sub-rappi     { background: rgba(249,115,22,.18); color: var(--rappi); }
-    .e-chip.qty  { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+    .e-chip.qty  {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .02em;
+    }
+    .e-chip.qty .qty-hash {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 3px;
+      font-size: 8px; font-weight: 900;
+      color: #fff;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
     .e-chip.fv   { background: var(--surface); border: 1px solid var(--border); color: var(--warn); }
     .e-chip.cmnt { background: var(--surface); border: 1px solid var(--border); color: var(--muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .entry-actions { display: flex; gap: 3px; flex-shrink: 0; }
@@ -438,9 +482,30 @@
     .btn-entry svg { width: 13px; height: 13px; }
     .btn-entry.del:hover  { background: rgba(248,81,73,.15);  color: var(--danger); border-color: var(--danger); }
     .btn-entry.edit:hover { background: rgba(47,129,247,.15); color: var(--accent); border-color: var(--accent); }
-    .empty-state { text-align: center; padding: 28px 20px; color: var(--muted); }
-    .empty-state .es-icon { font-size: 24px; margin-bottom: 8px; opacity: .4; }
-    .empty-state p { font-size: 13px; }
+    .empty-state {
+      text-align: center; padding: 32px 20px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 4px;
+      position: relative; overflow: hidden;
+    }
+    .empty-state::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(47,129,247,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .empty-state .es-icon-wrap {
+      width: 52px; height: 52px; margin: 0 auto 12px;
+      background: linear-gradient(135deg, rgba(47,129,247,.15), rgba(110,64,201,.15));
+      border: 1px solid rgba(47,129,247,.25);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty-state .es-icon { font-size: 22px; opacity: 1; }
+    .empty-state p { font-size: 13px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+    .empty-state .es-hint { font-size: 11px; color: var(--border); margin-top: 5px; font-weight: 400; }
 
     /* ── TOAST ── */
     #toast {
@@ -626,12 +691,13 @@
 
   <!-- SCANNER -->
   <div id="top-panel">
-    <div class="scanner-wrap">
+    <div class="scanner-wrap" id="scanner-wrap" onclick="toggleScanner()">
       <div id="interactive"></div>
       <div class="scanner-overlay">
         <div class="scan-frame"><div class="scan-line"></div></div>
       </div>
       <div class="scan-status" id="scan-status"></div>
+      <div class="scanner-toggle-hint" id="scanner-toggle-hint">Tocá para pausar</div>
     </div>
     <div class="manual-row">
       <input class="manual-input" id="manual-input" type="text" placeholder="Referencia o DUN…" inputmode="numeric" autocomplete="off" />
@@ -657,7 +723,14 @@
     <!-- Fecha vencimiento (unidades) -->
     <div class="sub-row" id="row-fecha">
       <span class="sub-label">Venc.</span>
-      <input class="sub-input" id="input-fecha" type="date" />
+      <div class="date-seg-wrap" id="date-seg-wrap">
+        <input class="date-seg-part" id="seg-dd" maxlength="2" inputmode="numeric" placeholder="DD" autocomplete="off" />
+        <span class="date-seg-sep">/</span>
+        <input class="date-seg-part" id="seg-mm" maxlength="2" inputmode="numeric" placeholder="MM" autocomplete="off" />
+        <span class="date-seg-sep">/</span>
+        <input class="date-seg-part date-seg-year" id="seg-aa" maxlength="4" inputmode="numeric" placeholder="AAAA" autocomplete="off" />
+      </div>
+      <input type="hidden" id="input-fecha" />
     </div>
 
     <!-- IDL / RAPPI (rotura) -->
@@ -674,7 +747,7 @@
     <!-- Cantidad + confirmar -->
     <div class="qty-row" id="row-qty">
       <span class="qty-label">Cant.</span>
-      <input class="qty-input" id="input-qty" type="number" min="1" value="1" inputmode="numeric" />
+      <input class="qty-input" id="input-qty" type="number" min="1" placeholder="1" inputmode="numeric" />
       <button class="btn-confirm" id="btn-confirm" onclick="confirmEntry()">&#10003; Confirmar</button>
     </div>
     </div><!-- /action-inner -->
@@ -687,8 +760,9 @@
     </div>
     <div id="entries-list">
       <div class="empty-state">
-        <div class="es-icon">&#9783;</div>
+        <div class="es-icon-wrap"><span class="es-icon">⬡</span></div>
         <p>Escaneá o ingresá un código para comenzar</p>
+        <p class="es-hint">Los registros aparecerán acá</p>
       </div>
     </div>
   </div>
@@ -940,32 +1014,61 @@ function soundFound() {
   _note(1320, t + 0.07, 0.10, 0.10, 'sine', ctx);
 }
 
-// 2. Referencia no encontrada — nota baja con leve "thud"
+// 2. Referencia no encontrada — nota baja con leve "thud", más audible
 function soundNotFound() {
   const ctx = _getCtx();
   const t   = ctx.currentTime;
-  // Tono descendente
+  // Tono descendente más fuerte y con vibración leve
   const osc  = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.connect(gain);
   gain.connect(ctx.destination);
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(300, t);
-  osc.frequency.exponentialRampToValueAtTime(160, t + 0.18);
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(280, t);
+  osc.frequency.exponentialRampToValueAtTime(120, t + 0.25);
   gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(0.14, t + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+  gain.gain.linearRampToValueAtTime(0.28, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
   osc.start(t);
-  osc.stop(t + 0.23);
+  osc.stop(t + 0.33);
+  // Segundo pulso corto para refuerzo
+  const osc2  = ctx.createOscillator();
+  const gain2 = ctx.createGain();
+  osc2.connect(gain2);
+  gain2.connect(ctx.destination);
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(200, t + 0.15);
+  osc2.frequency.exponentialRampToValueAtTime(100, t + 0.38);
+  gain2.gain.setValueAtTime(0, t + 0.15);
+  gain2.gain.linearRampToValueAtTime(0.20, t + 0.16);
+  gain2.gain.exponentialRampToValueAtTime(0.0001, t + 0.40);
+  osc2.start(t + 0.15);
+  osc2.stop(t + 0.41);
 }
 
-// 3. Registro confirmado — tres notas tipo "done", cálidas
+// 3. Registro confirmado — burbuja suave: nota única corta con ataque rápido y decay largo
 function soundConfirm() {
   const ctx = _getCtx();
   const t   = ctx.currentTime;
-  _note(660,  t,        0.09, 0.10, 'sine', ctx);
-  _note(880,  t + 0.08, 0.09, 0.10, 'sine', ctx);
-  _note(1100, t + 0.16, 0.14, 0.09, 'sine', ctx);
+  // Burbuja: sine puro, pitch medio-alto, ataque instantáneo, decay natural tipo pop
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  // Leve filtro paso-bajo para calidez
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(2200, t);
+  filter.frequency.exponentialRampToValueAtTime(600, t + 0.18);
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1040, t);
+  osc.frequency.exponentialRampToValueAtTime(820, t + 0.18);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.13, t + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+  osc.start(t);
+  osc.stop(t + 0.23);
 }
 
 // 4. Alerta "¿salir?" — dos pulsos de advertencia, neutros
@@ -1114,7 +1217,7 @@ function selectTipo(tipo) {
   }
 
   setTimeout(() => {
-    if (tipo === 'unidades') document.getElementById('input-fecha').focus();
+    if (tipo === 'unidades') document.getElementById('seg-dd').focus();
     else document.getElementById('input-qty').select();
   }, 50);
 }
@@ -1140,7 +1243,7 @@ function confirmEntry() {
     showToast('Seleccioná IDL o RAPPI', 'warn'); return;
   }
 
-  const qty        = parseInt(document.getElementById('input-qty').value) || 1;
+  const qty        = Math.max(1, parseInt(document.getElementById('input-qty').value) || 1);
   const fechaVenc  = currentTipo === 'unidades' ? document.getElementById('input-fecha').value : null;
   const subtipo    = currentTipo === 'rotura'   ? currentRotura : null;
   const comentario = currentTipo === 'otro'     ? document.getElementById('input-comentario').value.trim() : null;
@@ -1179,8 +1282,9 @@ function confirmEntry() {
   document.getElementById('product-card').className = 'product-card';
   document.getElementById('product-card').innerHTML = '';
   setActionButtonsEnabled(false);
-  document.getElementById('input-qty').value = '1';
+  document.getElementById('input-qty').value = '';
   document.getElementById('input-fecha').value = '';
+  clearSegDate();
   document.getElementById('input-comentario').value = '';
   document.getElementById('row-fecha').classList.remove('visible');
   document.getElementById('row-rotura').classList.remove('visible');
@@ -1188,6 +1292,54 @@ function confirmEntry() {
   document.getElementById('row-qty').classList.remove('visible');
   lastCode = ''; lastCodeTime = 0;
 }
+
+// ═══════════════════════════════════════════════
+//  SEGMENTED DATE INPUT
+// ═══════════════════════════════════════════════
+function syncHiddenDate() {
+  const dd = document.getElementById('seg-dd').value.padStart(2,'0');
+  const mm = document.getElementById('seg-mm').value.padStart(2,'0');
+  const aa = document.getElementById('seg-aa').value;
+  const hidden = document.getElementById('input-fecha');
+  if (dd && mm && aa && aa.length === 4) {
+    hidden.value = `${aa}-${mm}-${dd}`; // ISO for storage
+  } else {
+    hidden.value = '';
+  }
+}
+
+function clearSegDate() {
+  ['seg-dd','seg-mm','seg-aa'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const h = document.getElementById('input-fecha');
+  if (h) h.value = '';
+}
+
+(function initSegDate() {
+  function padAndAdvance(el, maxLen, nextId) {
+    el.addEventListener('input', () => {
+      let v = el.value.replace(/\D/g,'');
+      if (v.length > maxLen) v = v.slice(0, maxLen);
+      el.value = v;
+      syncHiddenDate();
+      if (v.length === maxLen && nextId) {
+        document.getElementById(nextId).focus();
+      }
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && el.value === '') {
+        const prevMap = { 'seg-mm': 'seg-dd', 'seg-aa': 'seg-mm' };
+        if (prevMap[el.id]) document.getElementById(prevMap[el.id]).focus();
+      }
+      if (e.key === 'Enter') confirmEntry();
+    });
+  }
+  padAndAdvance(document.getElementById('seg-dd'), 2, 'seg-mm');
+  padAndAdvance(document.getElementById('seg-mm'), 2, 'seg-aa');
+  padAndAdvance(document.getElementById('seg-aa'), 4, null);
+})();
 
 document.getElementById('input-qty').addEventListener('keydown', e => {
   if (e.key === 'Enter') confirmEntry();
@@ -1205,7 +1357,7 @@ function renderList() {
   const list = document.getElementById('entries-list');
 
   if (!entries.length) {
-    list.innerHTML = `<div class="empty-state"><div class="es-icon">&#9783;</div><p>Escaneá o ingresá un código para comenzar</p></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="es-icon-wrap"><span class="es-icon">⬡</span></div><p>Escaneá o ingresá un código para comenzar</p><p class="es-hint">Los registros aparecerán acá</p></div>`;
     return;
   }
 
@@ -1218,7 +1370,7 @@ function renderList() {
         <div class="entry-chips">
           <span class="e-chip tipo-${e.tipo}">${TIPO_LABEL[e.tipo]}</span>
           ${e.subtipo    ? `<span class="e-chip sub-${e.subtipo.toLowerCase()}">${e.subtipo}</span>` : ''}
-          <span class="e-chip qty">×${e.qty}</span>
+          <span class="e-chip qty"><span class="qty-hash">#</span>${e.qty}</span>
           ${e.fechaVenc  ? `<span class="e-chip fv">Venc. ${e.fechaVenc}</span>` : ''}
           ${e.comentario ? `<span class="e-chip cmnt" title="${e.comentario}">${e.comentario}</span>` : ''}
         </div>
@@ -1287,7 +1439,7 @@ function editEntry(id) {
         </div>
         <div class="modal-field">
           <label>Cantidad</label>
-          <input type="number" id="edit-qty" value="${e.qty}" min="1" inputmode="numeric" />
+          <input type="number" id="edit-qty" value="${e.qty}" min="1" placeholder="1" inputmode="numeric" />
         </div>
         <div class="modal-btns">
           <button class="m-cancel" onclick="closeEditModal()">Cancelar</button>
@@ -1310,15 +1462,34 @@ function saveEdit() {
   const e = entries.find(x => x.id === editingId);
   if (!e) return;
   const tipo = document.getElementById('edit-tipo').value;
-  e.tipo       = tipo;
-  e.subtipo    = tipo==='rotura'   ? document.getElementById('edit-subtipo').value    : null;
-  e.fechaVenc  = tipo==='unidades' ? document.getElementById('edit-fecha').value      : null;
-  e.comentario = tipo==='otro'     ? document.getElementById('edit-comentario').value.trim() : null;
-  e.qty        = parseInt(document.getElementById('edit-qty').value) || 1;
+  const subtipo    = tipo==='rotura'   ? document.getElementById('edit-subtipo').value    : null;
+  const fechaVenc  = tipo==='unidades' ? document.getElementById('edit-fecha').value      : null;
+  const comentario = tipo==='otro'     ? document.getElementById('edit-comentario').value.trim() : null;
+  const qty        = parseInt(document.getElementById('edit-qty').value) || 1;
+
+  // Check if the updated values collide with another existing entry
+  const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
+  const collision = entries.find(x => x.id !== editingId && entryKey(x.ref, x.tipo, x.subtipo, x.fechaVenc, x.comentario) === newKey);
+
   closeEditModal();
-  saveEntries();
-  renderList();
-  showToast('Guardado', 'success');
+
+  if (collision) {
+    // Merge: add qty to the collision entry and remove this one
+    collision.qty += qty;
+    entries = entries.filter(x => x.id !== e.id);
+    saveEntries();
+    renderList();
+    showToast(`Combinado → ${collision.ref} ×${collision.qty}`, 'success');
+  } else {
+    e.tipo       = tipo;
+    e.subtipo    = subtipo;
+    e.fechaVenc  = fechaVenc;
+    e.comentario = comentario;
+    e.qty        = qty;
+    saveEntries();
+    renderList();
+    showToast('Guardado', 'success');
+  }
 }
 
 function closeEditModal() {
@@ -1444,7 +1615,10 @@ async function startScanner() {
 
       scannerActive = true;
 
-      const canvas = document.createElement('canvas');
+      const wrap = document.getElementById('scanner-wrap');
+      if (wrap) wrap.classList.remove('scanner-off');
+      const hint = document.getElementById('scanner-toggle-hint');
+      if (hint) hint.textContent = 'Tocá para pausar';
       const ctx    = canvas.getContext('2d');
       let lastCode = ''; let lastCodeTime = 0;
 
@@ -1498,6 +1672,10 @@ async function startScanner() {
     if (err) { document.getElementById('scan-status').textContent = 'Cámara no disponible'; return; }
     Quagga.start();
     scannerActive = true;
+    const wrap2 = document.getElementById('scanner-wrap');
+    if (wrap2) wrap2.classList.remove('scanner-off');
+    const hint2 = document.getElementById('scanner-toggle-hint');
+    if (hint2) hint2.textContent = 'Tocá para pausar';
 
     Quagga.onDetected(result => {
       const code = result && result.codeResult && result.codeResult.code;
@@ -1512,6 +1690,9 @@ async function startScanner() {
   });
 }
 
+
+
+
 function stopScanner() {
   scannerActive = false;
   if (_rafId)  { clearTimeout(_rafId); _rafId = null; }
@@ -1520,28 +1701,29 @@ function stopScanner() {
   const container = document.getElementById('interactive');
   if (container) container.innerHTML = '';
   try { Quagga.offDetected(); Quagga.stop(); } catch(_) {}
+  const wrap = document.getElementById('scanner-wrap');
+  if (wrap) wrap.classList.add('scanner-off');
+  const hint = document.getElementById('scanner-toggle-hint');
+  if (hint) hint.textContent = 'Tocá para activar';
   document.getElementById('scan-status').textContent = '';
 }
 
-
-function stopScanner() {
-  scannerActive = false;
-
-  // Detener nativo
-  if (_rafId)  { clearTimeout(_rafId); _rafId = null; }
-  if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
-  _nativeDetector = null;
-  // Limpiar video inyectado
-  const container = document.getElementById('interactive');
-  if (container) container.innerHTML = '';
-
-  // Detener Quagga si estaba en uso
-  try { Quagga.offDetected(); Quagga.stop(); } catch(_) {}
-
-  const btn = document.getElementById('btn-toggle-scan');
-  btn.innerHTML = '&#9654; Iniciar';
-  btn.className = 'btn-scan start';
-  document.getElementById('scan-status').textContent = 'Escáner detenido';
+function toggleScanner() {
+  if (scannerActive) {
+    stopScanner();
+  } else {
+    const wrap = document.getElementById('scanner-wrap');
+    if (wrap) wrap.classList.remove('scanner-off');
+    const hint = document.getElementById('scanner-toggle-hint');
+    if (hint) hint.textContent = 'Iniciando…';
+    startScanner().then(() => {
+      const hint2 = document.getElementById('scanner-toggle-hint');
+      if (hint2) hint2.textContent = 'Tocá para pausar';
+    }).catch(() => {
+      const hint2 = document.getElementById('scanner-toggle-hint');
+      if (hint2) hint2.textContent = 'Tocá para activar';
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════
