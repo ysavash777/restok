@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>GDSMap · Inventario</title>
+  <title>GDSMapiX · Inventario</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -69,7 +70,11 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
     }
-    .setup-logo h2 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+    .setup-logo h2 {
+      font-size: 22px; font-weight: 800; letter-spacing: -.4px;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+    }
     .setup-card p { color: var(--text2); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
     .setup-progress-wrap { margin-bottom: 20px; }
     .setup-progress-track {
@@ -163,7 +168,11 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
     }
-    header h1 { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
+    header h1 {
+      font-size: 16px; font-weight: 800; letter-spacing: -.4px;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+    }
     .header-right { display: flex; align-items: center; gap: 6px; }
     .btn-icon {
       height: 32px; padding: 0 11px;
@@ -278,21 +287,24 @@
     }
     .product-card.visible { display: flex; align-items: flex-start; gap: 10px; }
     .product-card.found {
-      background: linear-gradient(135deg, rgba(34,197,94,.1) 0%, rgba(14,19,32,.97) 60%);
-      border-color: rgba(34,197,94,.35);
-      box-shadow: 0 0 20px rgba(34,197,94,.08), inset 0 1px 0 rgba(34,197,94,.06);
+      background: linear-gradient(135deg, rgba(34,197,94,.14) 0%, rgba(14,19,32,.94) 55%);
+      border: 1px solid rgba(34,197,94,.32);
+      box-shadow: 0 0 24px rgba(34,197,94,.1), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 12px 13px;
     }
     .product-card.not-found {
       border-color: rgba(248,81,73,.35);
       background: linear-gradient(135deg, rgba(248,81,73,.08) 0%, rgba(14,19,32,.97) 60%);
     }
     .pc-check {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
       background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 0 14px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.2);
     }
-    .pc-check svg { width: 14px; height: 14px; }
+    .pc-check svg { width: 15px; height: 15px; }
     .pc-cross {
       width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
       background: linear-gradient(135deg, #f85149 0%, #c0392b 100%);
@@ -301,22 +313,44 @@
     }
     .pc-cross svg { width: 14px; height: 14px; }
     .pc-info { flex: 1; min-width: 0; }
-    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
-    .pc-ref  { font-size: 11px; color: var(--text2); font-weight: 500; }
-    .pc-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-    .pc-meta-item {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 10.5px; font-weight: 600; color: var(--text2);
-      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
-      border-radius: 6px; padding: 3px 7px 3px 6px;
-      max-width: 100%; overflow: hidden;
+    .pc-desc {
+      font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 8px;
+      overflow: hidden; word-break: break-word;
+      font-size: 13px;
+      max-height: calc(1.3em * 2);
     }
-    .pc-meta-item .pc-meta-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .pc-meta-item .pc-meta-label { color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; font-size: 9px; flex-shrink: 0; }
-    .pc-meta-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: .85; }
-    .pc-meta-item.m-ref svg  { color: var(--accent); }
-    .pc-meta-item.m-id svg   { color: var(--idl); }
-    .pc-meta-item.m-grupo svg { color: var(--accent2); }
+    .pc-ref  { font-size: 11px; color: var(--text2); font-weight: 500; }
+    .pc-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "id grupo" "ref ref";
+      gap: 6px;
+    }
+    .pc-meta-item.m-id    { grid-area: id; }
+    .pc-meta-item.m-grupo { grid-area: grupo; }
+    .pc-meta-item.m-ref   { grid-area: ref; }
+    .pc-meta-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 700; color: var(--text);
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 9px; padding: 7px 9px;
+      min-width: 0;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .pc-meta-item .pc-meta-icon {
+      width: 24px; height: 24px; flex-shrink: 0; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .pc-meta-item .pc-meta-val {
+      overflow-wrap: anywhere; word-break: break-word;
+      letter-spacing: .2px; line-height: 1.3;
+    }
+    .pc-meta-item.m-ref .pc-meta-icon   { background: rgba(59,142,248,.16); color: var(--accent); }
+    .pc-meta-item.m-id .pc-meta-icon    { background: rgba(96,165,250,.16); color: var(--idl); }
+    .pc-meta-item.m-grupo .pc-meta-icon { background: rgba(124,58,237,.16); color: var(--accent2); }
     .pc-err  { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
     .pc-retry { font-size: 11px; color: rgba(248,81,73,.65); font-weight: 500; }
     .pc-close {
@@ -737,23 +771,27 @@
   <div class="setup-card">
     <div class="setup-logo">
       <div class="dot">
-        <!-- Premium flat penguin logo -->
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
-          <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
-          <ellipse cx="11" cy="6.5" rx="4" ry="4" fill="white" opacity=".95"/>
-          <circle cx="9.2" cy="5.8" r="1" fill="#1a2540"/>
-          <circle cx="9.5" cy="5.5" r=".3" fill="white"/>
-          <circle cx="12.8" cy="5.8" r="1" fill="#1a2540"/>
-          <circle cx="13.1" cy="5.5" r=".3" fill="white"/>
-          <path d="M10.2 7.8 L11 9 L11.8 7.8 Q11 7.3 10.2 7.8Z" fill="#f59e0b"/>
-          <ellipse cx="8.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
-          <ellipse cx="13.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
-          <path d="M5 11 Q3 13 4.5 16 Q6 12.5 5 11Z" fill="white" opacity=".9"/>
-          <path d="M17 11 Q19 13 17.5 16 Q16 12.5 17 11Z" fill="white" opacity=".9"/>
+        <!-- Premium flat barcode-scanner logo -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="scanGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7dd3fc"/>
+              <stop offset="50%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+          </defs>
+          <path d="M4 8V6a2 2 0 012-2h2" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8V6a2 2 0 00-2-2h-2" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16v2a2 2 0 002 2h2" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 16v2a2 2 0 01-2 2h-2" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="7" y="8" width="1.6" height="8" rx=".8" fill="url(#scanGrad)"/>
+          <rect x="10.2" y="8" width="1" height="8" rx=".5" fill="url(#scanGrad)" opacity=".75"/>
+          <rect x="12.4" y="8" width="2" height="8" rx="1" fill="url(#scanGrad)"/>
+          <rect x="15.6" y="8" width="1" height="8" rx=".5" fill="url(#scanGrad)" opacity=".75"/>
+          <rect x="17.6" y="8" width="1.6" height="8" rx=".8" fill="url(#scanGrad)"/>
         </svg>
       </div>
-      <h2>GDSMap</h2>
+      <h2>GDSMapiX</h2>
     </div>
     <p id="setup-msg">Inicializando sistema…</p>
     <div class="setup-progress-wrap">
@@ -804,22 +842,26 @@
 <header>
   <div class="header-left">
     <div class="h-dot">
-      <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="11" cy="13" rx="6" ry="7" fill="white" opacity=".95"/>
-        <ellipse cx="11" cy="14" rx="3.5" ry="4.5" fill="#1a2540" opacity=".85"/>
-        <ellipse cx="11" cy="6.5" rx="4" ry="4" fill="white" opacity=".95"/>
-        <circle cx="9.2" cy="5.8" r="1" fill="#1a2540"/>
-        <circle cx="9.5" cy="5.5" r=".3" fill="white"/>
-        <circle cx="12.8" cy="5.8" r="1" fill="#1a2540"/>
-        <circle cx="13.1" cy="5.5" r=".3" fill="white"/>
-        <path d="M10.2 7.8 L11 9 L11.8 7.8 Q11 7.3 10.2 7.8Z" fill="#f59e0b"/>
-        <ellipse cx="8.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
-        <ellipse cx="13.5" cy="20" rx="2" ry=".9" fill="#f59e0b" opacity=".9"/>
-        <path d="M5 11 Q3 13 4.5 16 Q6 12.5 5 11Z" fill="white" opacity=".9"/>
-        <path d="M17 11 Q19 13 17.5 16 Q16 12.5 17 11Z" fill="white" opacity=".9"/>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="scanGradHeader" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7dd3fc"/>
+            <stop offset="50%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <path d="M4 8V6a2 2 0 012-2h2" stroke="url(#scanGradHeader)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 8V6a2 2 0 00-2-2h-2" stroke="url(#scanGradHeader)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 16v2a2 2 0 002 2h2" stroke="url(#scanGradHeader)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 16v2a2 2 0 01-2 2h-2" stroke="url(#scanGradHeader)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="7" y="8" width="1.6" height="8" rx=".8" fill="url(#scanGradHeader)"/>
+        <rect x="10.2" y="8" width="1" height="8" rx=".5" fill="url(#scanGradHeader)" opacity=".75"/>
+        <rect x="12.4" y="8" width="2" height="8" rx="1" fill="url(#scanGradHeader)"/>
+        <rect x="15.6" y="8" width="1" height="8" rx=".5" fill="url(#scanGradHeader)" opacity=".75"/>
+        <rect x="17.6" y="8" width="1.6" height="8" rx=".8" fill="url(#scanGradHeader)"/>
       </svg>
     </div>
-    <h1>GDSMap</h1>
+    <h1>GDSMapiX</h1>
   </div>
   <div class="header-right">
     <button class="btn-icon" onclick="exportXLSX()">
@@ -1093,8 +1135,13 @@ function lookupProduct(code) {
     const refVal = refCol ? String(row[refCol] ?? '').trim() : '';
     const dunRaw = dunCol ? String(row[dunCol] ?? '').trim() : '';
 
-    // DUN puede ser "7794000008540:1, 67794000008542:80" — comparar solo antes de ":"
-    const dunCodes = dunRaw.split(',').map(s => s.split(':')[0].trim()).filter(Boolean);
+    // DUN puede contener múltiples códigos separados por coma o punto y coma,
+    // cada uno en formato "CODIGO:CANTIDAD" — se compara solo la parte antes de ":"
+    // Ejemplos válidos: "7794000008540:1" / "17790380028106:288, 17790380028107:288, 7790380028109:1"
+    const dunCodes = dunRaw
+      .split(/[,;]/)
+      .map(s => s.split(':')[0].trim())
+      .filter(Boolean);
     const dunMatch = dunCodes.includes(trimmed);
 
     if ((refVal && refVal === trimmed) || dunMatch) {
@@ -1240,6 +1287,7 @@ function renderProductCard(product, rawCode) {
   if (scannerActive) stopScanner();
   card.className = 'product-card visible found';
   card.style.opacity = '0';
+  const descText = product.desc || product.ref || rawCode;
   card.innerHTML = `
     <div class="pc-check">
       <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1247,32 +1295,19 @@ function renderProductCard(product, rawCode) {
       </svg>
     </div>
     <div class="pc-info">
-      <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
+      <div class="pc-desc" id="pc-desc-el">${descText}</div>
       <div class="pc-meta">
-        <span class="pc-meta-item m-ref">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/>
-            <path d="M5.5 6h5M5.5 8.5h5M5.5 11h3"/>
-          </svg>
-          <span class="pc-meta-label">Ref</span>
-          <span class="pc-meta-val">${product.ref || '—'}</span>
-        </span>
         <span class="pc-meta-item m-id">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="5" width="12" height="7" rx="1"/>
-            <path d="M2 7.5h12M5 5V3.5h6V5"/>
-          </svg>
-          <span class="pc-meta-label">ID</span>
+          <span class="pc-meta-icon"><i class="fa-solid fa-tag"></i></span>
           <span class="pc-meta-val">${product.id || '—'}</span>
         </span>
         <span class="pc-meta-item m-grupo">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 4.5l6-2.2 6 2.2v3.8l-6 2.2-6-2.2V4.5z"/>
-            <path d="M2 4.5l6 2.2 6-2.2M8 6.7v6.6"/>
-            <path d="M2 11.3l6 2.2 6-2.2" opacity=".55"/>
-          </svg>
-          <span class="pc-meta-label">Grupo</span>
+          <span class="pc-meta-icon"><i class="fa-solid fa-warehouse"></i></span>
           <span class="pc-meta-val">${product.grupo || '—'}</span>
+        </span>
+        <span class="pc-meta-item m-ref">
+          <span class="pc-meta-icon"><i class="fa-solid fa-barcode"></i></span>
+          <span class="pc-meta-val">${product.ref || '—'}</span>
         </span>
       </div>
     </div>
@@ -1281,7 +1316,21 @@ function renderProductCard(product, rawCode) {
         <path d="M2 2l6 6M8 2l-6 6"/>
       </svg>
     </button>`;
-  requestAnimationFrame(() => requestAnimationFrame(() => { card.style.opacity = '1'; }));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    card.style.opacity = '1';
+    fitDescription();
+  }));
+}
+
+function fitDescription() {
+  const el = document.getElementById('pc-desc-el');
+  if (!el) return;
+  let size = 13;
+  el.style.fontSize = size + 'px';
+  while (size > 9 && el.scrollHeight > Math.ceil(size * 1.3 * 2) + 1) {
+    size -= 0.5;
+    el.style.fontSize = size + 'px';
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -1385,13 +1434,6 @@ function confirmEntry() {
   if (!currentProduct || !currentTipo) return;
   if (currentTipo === 'rotura' && !currentRotura) { showToast('Seleccione IDL o RAPPI', 'warn'); return; }
 
-  const qtyVal = document.getElementById('input-qty').value;
-  if (!qtyVal || parseInt(qtyVal) < 1) {
-    showToast('Ingrese la cantidad', 'warn');
-    document.getElementById('input-qty').focus();
-    return;
-  }
-
   _doConfirmEntry();
 }
 
@@ -1463,7 +1505,7 @@ function renderList() {
     <div class="entry-card tipo-${e.tipo}" id="entry-${e.id}">
       <div class="entry-qty-col">
         <span class="entry-qty-num">${e.qty}</span>
-        <span class="entry-qty-label">${e.tipo === 'bulto' ? 'bultos' : 'uds'}</span>
+        <span class="entry-qty-label">uds</span>
       </div>
       <div class="entry-divider"></div>
       <div class="entry-body">
