@@ -276,7 +276,7 @@
       border-radius: var(--radius); padding: 11px 14px; display: none;
       opacity: 0; transition: opacity .2s;
     }
-    .product-card.visible { display: flex; align-items: center; gap: 10px; }
+    .product-card.visible { display: flex; align-items: flex-start; gap: 10px; }
     .product-card.found {
       background: linear-gradient(135deg, rgba(34,197,94,.1) 0%, rgba(14,19,32,.97) 60%);
       border-color: rgba(34,197,94,.35);
@@ -287,14 +287,14 @@
       background: linear-gradient(135deg, rgba(248,81,73,.08) 0%, rgba(14,19,32,.97) 60%);
     }
     .pc-check {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
       background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 0 14px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.2);
     }
     .pc-check svg { width: 14px; height: 14px; }
     .pc-cross {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
       background: linear-gradient(135deg, #f85149 0%, #c0392b 100%);
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 0 14px rgba(248,81,73,.4), inset 0 1px 0 rgba(255,255,255,.2);
@@ -303,10 +303,24 @@
     .pc-info { flex: 1; min-width: 0; }
     .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
     .pc-ref  { font-size: 11px; color: var(--text2); font-weight: 500; }
+    .pc-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .pc-meta-item {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10.5px; font-weight: 600; color: var(--text2);
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 6px; padding: 3px 7px 3px 6px;
+      max-width: 100%; overflow: hidden;
+    }
+    .pc-meta-item .pc-meta-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pc-meta-item .pc-meta-label { color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; font-size: 9px; flex-shrink: 0; }
+    .pc-meta-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: .85; }
+    .pc-meta-item.m-ref svg  { color: var(--accent); }
+    .pc-meta-item.m-id svg   { color: var(--idl); }
+    .pc-meta-item.m-grupo svg { color: var(--accent2); }
     .pc-err  { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
     .pc-retry { font-size: 11px; color: rgba(248,81,73,.65); font-weight: 500; }
     .pc-close {
-      width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+      width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; margin-top: 1px;
       background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
       color: var(--muted); cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -472,7 +486,7 @@
       border: 1px solid var(--border);
       transition: border-color .18s, box-shadow .18s, transform .12s;
       position: relative;
-      min-height: 68px;
+      height: 92px;
     }
     .entry-card::before {
       content: ''; position: absolute; inset: 0; border-radius: 13px;
@@ -515,14 +529,14 @@
 
     .entry-divider { width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0; align-self: stretch; }
 
-    .entry-body { flex: 1; min-width: 0; padding: 11px 10px 11px 12px; display: flex; flex-direction: column; justify-content: center; }
+    .entry-body { flex: 1; min-width: 0; padding: 9px 10px 9px 12px; display: flex; flex-direction: column; justify-content: center; gap: 2px; overflow: hidden; }
     .entry-code {
       font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
       overflow: hidden; text-overflow: ellipsis;
     }
-    .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; letter-spacing: .1px; }
-    .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+    .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; letter-spacing: .1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; overflow: hidden; max-height: 22px; }
     .e-chip {
       font-size: 10px; font-weight: 700;
       padding: 2px 7px; border-radius: 5px;
@@ -1074,6 +1088,8 @@ function lookupProduct(code) {
     const dunCol  = findCol(row, ['dun','dun14','codigo dun']);
     const descCol = findCol(row, ['descripcion','description','desc','nombre']);
     const eanCol  = findCol(row, ['ean','ean13','codigoean','codigo ean']);
+    const idCol    = findCol(row, ['productoean','producto ean','idproducto','id producto']);
+    const grupoCol = findCol(row, ['codigogrupo','codigo grupo','grupo']);
     const refVal = refCol ? String(row[refCol] ?? '').trim() : '';
     const dunRaw = dunCol ? String(row[dunCol] ?? '').trim() : '';
 
@@ -1087,6 +1103,8 @@ function lookupProduct(code) {
         ref: refVal, dun: dunRaw,
         ean: eanCol ? String(row[eanCol] ?? '').trim() : '',
         desc: descCol ? String(row[descCol] ?? '') : '',
+        id: idCol ? String(row[idCol] ?? '').trim() : '',
+        grupo: grupoCol ? String(row[grupoCol] ?? '').trim() : '',
       };
     }
   }
@@ -1230,7 +1248,33 @@ function renderProductCard(product, rawCode) {
     </div>
     <div class="pc-info">
       <div class="pc-desc">${product.desc || product.ref || rawCode}</div>
-      <div class="pc-ref">${product.ref || rawCode}${product.ean ? ' · ' + product.ean : ''}</div>
+      <div class="pc-meta">
+        <span class="pc-meta-item m-ref">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/>
+            <path d="M5.5 6h5M5.5 8.5h5M5.5 11h3"/>
+          </svg>
+          <span class="pc-meta-label">Ref</span>
+          <span class="pc-meta-val">${product.ref || '—'}</span>
+        </span>
+        <span class="pc-meta-item m-id">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="12" height="7" rx="1"/>
+            <path d="M2 7.5h12M5 5V3.5h6V5"/>
+          </svg>
+          <span class="pc-meta-label">ID</span>
+          <span class="pc-meta-val">${product.id || '—'}</span>
+        </span>
+        <span class="pc-meta-item m-grupo">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4.5l6-2.2 6 2.2v3.8l-6 2.2-6-2.2V4.5z"/>
+            <path d="M2 4.5l6 2.2 6-2.2M8 6.7v6.6"/>
+            <path d="M2 11.3l6 2.2 6-2.2" opacity=".55"/>
+          </svg>
+          <span class="pc-meta-label">Grupo</span>
+          <span class="pc-meta-val">${product.grupo || '—'}</span>
+        </span>
+      </div>
     </div>
     <button class="pc-close" onclick="dismissProductCard()" title="Cerrar">
       <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
