@@ -301,7 +301,7 @@
     }
     .pc-cross svg { width: 14px; height: 14px; }
     .pc-info { flex: 1; min-width: 0; }
-    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 2px; }
+    .pc-desc { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
     .pc-ref  { font-size: 11px; color: var(--text2); font-weight: 500; }
     .pc-err  { font-size: 13px; color: var(--danger); font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
     .pc-retry { font-size: 11px; color: rgba(248,81,73,.65); font-weight: 500; }
@@ -377,6 +377,11 @@
       border-color: rgba(148,163,184,.4); color: var(--text2);
       box-shadow: 0 0 14px rgba(100,116,139,.18), inset 0 1px 0 rgba(148,163,184,.12);
     }
+    .btn-action.active.bulto {
+      background: linear-gradient(160deg, rgba(124,58,237,.35) 0%, rgba(91,33,182,.2) 100%);
+      border-color: rgba(196,181,253,.45); color: #ddd6fe;
+      box-shadow: 0 0 18px rgba(124,58,237,.25), inset 0 1px 0 rgba(196,181,253,.2), inset 0 -1px 0 rgba(91,33,182,.3);
+    }
     .btn-action:disabled { cursor: not-allowed; }
 
     /* sub rows */
@@ -407,7 +412,7 @@
       width: 28px; padding: 0;
     }
     .date-seg-part::placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
-    .date-seg-year { width: 44px; }
+    .date-seg-year { width: 30px; }
     .date-seg-sep { color: var(--muted); font-size: 14px; font-weight: 500; user-select: none; padding: 0 1px; }
 
     /* rotura buttons */
@@ -456,7 +461,8 @@
       padding: 7px 0 9px; position: sticky; top: 0;
       background: transparent; z-index: 10;
     }
-    .list-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+    .list-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); transition: opacity .2s, transform .2s; }
+    .list-title.hidden { opacity: 0; transform: translateY(-6px); pointer-events: none; }
 
     /* entry cards — premium redesign */
     .entry-card {
@@ -478,9 +484,11 @@
     .entry-card.tipo-rotura   { border-color: rgba(248,81,73,.22);  background: linear-gradient(125deg, rgba(248,81,73,.1)  0%, rgba(14,19,32,.97) 45%); }
     .entry-card.tipo-vencido  { border-color: rgba(245,158,11,.22); background: linear-gradient(125deg, rgba(245,158,11,.1) 0%, rgba(14,19,32,.97) 45%); }
     .entry-card.tipo-otro     { border-color: rgba(100,116,139,.18); background: linear-gradient(125deg, rgba(100,116,139,.08) 0%, rgba(14,19,32,.97) 45%); }
+    .entry-card.tipo-bulto    { border-color: rgba(124,58,237,.22);  background: linear-gradient(125deg, rgba(124,58,237,.1)  0%, rgba(14,19,32,.97) 45%); }
     .entry-card.tipo-unidades:hover { box-shadow: 0 4px 24px rgba(59,130,246,.14); }
     .entry-card.tipo-rotura:hover   { box-shadow: 0 4px 24px rgba(248,81,73,.12); }
     .entry-card.tipo-vencido:hover  { box-shadow: 0 4px 24px rgba(245,158,11,.12); }
+    .entry-card.tipo-bulto:hover    { box-shadow: 0 4px 24px rgba(124,58,237,.14); }
 
     @keyframes slideIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
 
@@ -501,13 +509,18 @@
     .entry-card.tipo-unidades .entry-qty-num { color: #93c5fd; text-shadow: 0 0 16px rgba(147,197,253,.35); }
     .entry-card.tipo-rotura   .entry-qty-num { color: #fca5a5; text-shadow: 0 0 16px rgba(252,165,165,.3); }
     .entry-card.tipo-vencido  .entry-qty-num { color: #fcd34d; text-shadow: 0 0 16px rgba(252,211,77,.3); }
+    .entry-card.tipo-bulto    .entry-qty-num { color: #c4b5fd; text-shadow: 0 0 16px rgba(196,181,253,.3); }
     .entry-card.tipo-otro     .entry-qty-num { color: var(--text2); }
     .entry-qty-label { font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
 
     .entry-divider { width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0; align-self: stretch; }
 
     .entry-body { flex: 1; min-width: 0; padding: 11px 10px 11px 12px; display: flex; flex-direction: column; justify-content: center; }
-    .entry-code { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .entry-code {
+      font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; text-overflow: ellipsis;
+    }
     .entry-ref  { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; letter-spacing: .1px; }
     .entry-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
     .e-chip {
@@ -519,6 +532,7 @@
     .e-chip.tipo-rotura   { background: rgba(248,81,73,.15);  color: #fca5a5; border: 1px solid rgba(248,81,73,.22); }
     .e-chip.tipo-vencido  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.22); }
     .e-chip.tipo-otro     { background: rgba(100,116,139,.15); color: var(--text2); border: 1px solid rgba(100,116,139,.22); }
+    .e-chip.tipo-bulto    { background: rgba(124,58,237,.15); color: #c4b5fd; border: 1px solid rgba(124,58,237,.22); }
     .e-chip.sub-idl       { background: rgba(96,165,250,.15); color: var(--idl); border: 1px solid rgba(96,165,250,.22); }
     .e-chip.sub-rappi     { background: rgba(251,146,60,.15); color: var(--rappi); border: 1px solid rgba(251,146,60,.22); }
     .e-chip.fv   { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.2); color: var(--warn); }
@@ -805,14 +819,6 @@
         <path fill-rule="evenodd" clip-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/>
       </svg>
     </button>
-    <button class="btn-icon" id="btn-fullscreen" onclick="toggleFullscreen()" title="Pantalla completa">
-      <svg id="fs-icon-enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5"/>
-      </svg>
-      <svg id="fs-icon-exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none">
-        <path d="M6 1v5H1M10 1v5h5M15 10h-5v5M6 15v-5H1"/>
-      </svg>
-    </button>
   </div>
 </header>
 
@@ -856,10 +862,11 @@
         <button class="btn-action" id="btn-unidades" onclick="selectTipo('unidades')" disabled>Unidades</button>
         <button class="btn-action" id="btn-rotura"   onclick="selectTipo('rotura')"   disabled>Rotura</button>
         <button class="btn-action" id="btn-vencido"  onclick="selectTipo('vencido')"  disabled>Vencido</button>
+        <button class="btn-action" id="btn-bulto"    onclick="selectTipo('bulto')"    disabled>Bulto</button>
         <button class="btn-action" id="btn-otro"     onclick="selectTipo('otro')"     disabled>Otro</button>
       </div>
 
-      <!-- Fecha vencimiento (unidades) -->
+      <!-- Fecha vencimiento (unidades / bulto) -->
       <div class="sub-row" id="row-fecha">
         <span class="sub-label">Venc.</span>
         <div class="date-seg-wrap" id="date-seg-wrap">
@@ -867,7 +874,7 @@
           <span class="date-seg-sep">/</span>
           <input class="date-seg-part" id="seg-mm" maxlength="2" inputmode="numeric" placeholder="MM" autocomplete="off" />
           <span class="date-seg-sep">/</span>
-          <input class="date-seg-part date-seg-year" id="seg-aa" maxlength="4" inputmode="numeric" placeholder="AAAA" autocomplete="off" />
+          <input class="date-seg-part date-seg-year" id="seg-aa" maxlength="2" inputmode="numeric" placeholder="AA" autocomplete="off" />
         </div>
         <input type="hidden" id="input-fecha" />
       </div>
@@ -1177,7 +1184,7 @@ function processCode(code) {
     soundNotFound();
   } else {
     soundFound();
-    ['unidades','rotura','vencido','otro'].forEach(t => {
+    ['unidades','rotura','vencido','bulto','otro'].forEach(t => {
       const btn = document.getElementById('btn-'+t);
       if (btn.classList.contains('visible') || btn.classList.contains('ready')) {
         btn.className = 'btn-action visible';
@@ -1236,13 +1243,13 @@ function renderProductCard(product, rawCode) {
 // ═══════════════════════════════════════════════
 //  ACTION BUTTONS
 // ═══════════════════════════════════════════════
-const TIPO_LABELS = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', otro:'Otro' };
+const TIPO_LABELS = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', bulto:'Bulto', otro:'Otro' };
 
 function setActionButtonsEnabled(enabled) {
   const panel = document.getElementById('action-panel');
   if (enabled) {
     panel.classList.add('expanded');
-    ['unidades','rotura','vencido','otro'].forEach((t, i) => {
+    ['unidades','rotura','vencido','bulto','otro'].forEach((t, i) => {
       const btn = document.getElementById('btn-'+t);
       btn.disabled = false; btn.textContent = TIPO_LABELS[t];
       const delay = 220 + i * 55;
@@ -1253,7 +1260,7 @@ function setActionButtonsEnabled(enabled) {
     });
   } else {
     panel.classList.remove('expanded');
-    ['unidades','rotura','vencido','otro'].forEach(t => {
+    ['unidades','rotura','vencido','bulto','otro'].forEach(t => {
       const btn = document.getElementById('btn-'+t);
       btn.disabled = true; btn.className = 'btn-action'; btn.textContent = TIPO_LABELS[t];
     });
@@ -1264,11 +1271,11 @@ function setActionButtonsEnabled(enabled) {
 
 function selectTipo(tipo) {
   currentTipo = tipo;
-  ['unidades','rotura','vencido','otro'].forEach(t => {
+  ['unidades','rotura','vencido','bulto','otro'].forEach(t => {
     document.getElementById('btn-'+t).className = t === tipo
       ? `btn-action visible active ${t}` : 'btn-action visible';
   });
-  document.getElementById('row-fecha').classList.toggle('visible', tipo === 'unidades');
+  document.getElementById('row-fecha').classList.toggle('visible', tipo === 'unidades' || tipo === 'bulto');
   document.getElementById('row-rotura').classList.toggle('visible', tipo === 'rotura');
   document.getElementById('row-comentario').classList.toggle('visible', tipo === 'otro');
   document.getElementById('row-qty').classList.add('visible');
@@ -1278,7 +1285,7 @@ function selectTipo(tipo) {
     else { currentRotura = null; document.getElementById('btn-idl').className = 'btn-rotura'; document.getElementById('btn-rappi').className = 'btn-rotura'; }
   }
   setTimeout(() => {
-    if (tipo === 'unidades') document.getElementById('seg-dd').focus();
+    if (tipo === 'unidades' || tipo === 'bulto') document.getElementById('seg-dd').focus();
     else document.getElementById('input-qty').select();
   }, 50);
 }
@@ -1297,7 +1304,7 @@ function syncHiddenDate() {
   const dd = document.getElementById('seg-dd').value.padStart(2,'0');
   const mm = document.getElementById('seg-mm').value.padStart(2,'0');
   const aa = document.getElementById('seg-aa').value;
-  document.getElementById('input-fecha').value = (dd && mm && aa && aa.length === 4) ? `${aa}-${mm}-${dd}` : '';
+  document.getElementById('input-fecha').value = (dd && mm && aa && aa.length === 2) ? `20${aa}-${mm}-${dd}` : '';
 }
 function clearSegDate() {
   ['seg-dd','seg-mm','seg-aa'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -1320,7 +1327,7 @@ function clearSegDate() {
   }
   setup(document.getElementById('seg-dd'), 2, 'seg-mm');
   setup(document.getElementById('seg-mm'), 2, 'seg-aa');
-  setup(document.getElementById('seg-aa'), 4, null);
+  setup(document.getElementById('seg-aa'), 2, null);
 })();
 
 // ═══════════════════════════════════════════════
@@ -1334,17 +1341,11 @@ function confirmEntry() {
   if (!currentProduct || !currentTipo) return;
   if (currentTipo === 'rotura' && !currentRotura) { showToast('Seleccione IDL o RAPPI', 'warn'); return; }
 
-  if (currentTipo === 'unidades') {
-    const dd = document.getElementById('seg-dd').value;
-    const mm = document.getElementById('seg-mm').value;
-    const aa = document.getElementById('seg-aa').value;
-    if (!dd || !mm || !aa || aa.length < 4) {
-      showToast('Complete la fecha de vencimiento', 'warn');
-      if (!dd) document.getElementById('seg-dd').focus();
-      else if (!mm) document.getElementById('seg-mm').focus();
-      else document.getElementById('seg-aa').focus();
-      return;
-    }
+  const qtyVal = document.getElementById('input-qty').value;
+  if (!qtyVal || parseInt(qtyVal) < 1) {
+    showToast('Ingrese la cantidad', 'warn');
+    document.getElementById('input-qty').focus();
+    return;
   }
 
   _doConfirmEntry();
@@ -1352,7 +1353,7 @@ function confirmEntry() {
 
 function _doConfirmEntry() {
   const qty        = Math.max(1, parseInt(document.getElementById('input-qty').value) || 1);
-  const fechaVenc  = currentTipo === 'unidades' ? document.getElementById('input-fecha').value : null;
+  const fechaVenc  = (currentTipo === 'unidades' || currentTipo === 'bulto') ? document.getElementById('input-fecha').value : null;
   const subtipo    = currentTipo === 'rotura'   ? currentRotura : null;
   const comentario = currentTipo === 'otro'     ? document.getElementById('input-comentario').value.trim() : null;
 
@@ -1397,10 +1398,16 @@ function dismissProductCard() {
 // ═══════════════════════════════════════════════
 //  RENDER LIST
 // ═══════════════════════════════════════════════
-const TIPO_LABEL = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', otro:'Otro' };
+const TIPO_LABEL = { unidades:'Unidades', rotura:'Rotura', vencido:'Vencido', bulto:'Bulto', otro:'Otro' };
 const ICON_EDIT = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 2l3 3-8 8H3v-3L11 2z"/></svg>`;
 const ICON_DEL  = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9a1 1 0 001 1h6a1 1 0 001-1l1-9"/></svg>`;
 const QTY_ICON  = `<span class="qty-icon"><svg viewBox="0 0 8 8" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><line x1="2" y1="1" x2="2" y2="7"/><line x1="6" y1="1" x2="6" y2="7"/><line x1="1" y1="3" x2="7" y2="3"/><line x1="1" y1="5" x2="7" y2="5"/></svg></span>`;
+function formatFechaDisplay(f) {
+  if (!f) return '';
+  const parts = f.split('-'); // YYYY-MM-DD
+  if (parts.length !== 3) return f;
+  return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
+}
 
 function renderList() {
   const list = document.getElementById('entries-list');
@@ -1412,7 +1419,7 @@ function renderList() {
     <div class="entry-card tipo-${e.tipo}" id="entry-${e.id}">
       <div class="entry-qty-col">
         <span class="entry-qty-num">${e.qty}</span>
-        <span class="entry-qty-label">uds</span>
+        <span class="entry-qty-label">${e.tipo === 'bulto' ? 'bultos' : 'uds'}</span>
       </div>
       <div class="entry-divider"></div>
       <div class="entry-body">
@@ -1421,7 +1428,7 @@ function renderList() {
         <div class="entry-chips">
           <span class="e-chip tipo-${e.tipo}">${TIPO_LABEL[e.tipo]}</span>
           ${e.subtipo ? `<span class="e-chip sub-${e.subtipo.toLowerCase()}">${e.subtipo}</span>` : ''}
-          ${e.fechaVenc ? `<span class="e-chip fv">Venc. ${e.fechaVenc}</span>` : ''}
+          ${e.fechaVenc ? `<span class="e-chip fv">Venc. ${formatFechaDisplay(e.fechaVenc)}</span>` : ''}
           ${e.comentario ? `<span class="e-chip cmnt" title="${e.comentario}">${e.comentario}</span>` : ''}
         </div>
       </div>
@@ -1449,7 +1456,7 @@ function deleteEntry(id) {
 function editEntry(id) {
   const e = entries.find(x => x.id === id); if (!e) return;
   editingId = id;
-  const tipoOpts = ['unidades','rotura','vencido','otro'].map(t =>
+  const tipoOpts = ['unidades','rotura','vencido','bulto','otro'].map(t =>
     `<option value="${t}" ${t===e.tipo?'selected':''}>${TIPO_LABEL[t]}</option>`
   ).join('');
 
@@ -1457,7 +1464,7 @@ function editEntry(id) {
   let editDd='', editMm='', editAa='';
   if (e.fechaVenc) {
     const parts = e.fechaVenc.split('-'); // YYYY-MM-DD
-    if (parts.length===3) { editAa=parts[0]; editMm=parts[1]; editDd=parts[2]; }
+    if (parts.length===3) { editAa=parts[0].slice(-2); editMm=parts[1]; editDd=parts[2]; }
   }
 
   document.body.insertAdjacentHTML('beforeend', `
@@ -1473,14 +1480,14 @@ function editEntry(id) {
             <option value="RAPPI" ${e.subtipo==='RAPPI'?'selected':''}>RAPPI</option>
           </select>
         </div>
-        <div class="modal-field" id="edit-fecha-field" style="${e.tipo==='unidades'?'':'display:none'}">
+        <div class="modal-field" id="edit-fecha-field" style="${(e.tipo==='unidades'||e.tipo==='bulto')?'':'display:none'}">
           <label>Fecha vencimiento</label>
           <div class="date-seg-wrap" id="edit-date-seg-wrap">
             <input class="date-seg-part" id="edit-seg-dd" maxlength="2" inputmode="numeric" placeholder="DD" autocomplete="off" value="${editDd}" />
             <span class="date-seg-sep">/</span>
             <input class="date-seg-part" id="edit-seg-mm" maxlength="2" inputmode="numeric" placeholder="MM" autocomplete="off" value="${editMm}" />
             <span class="date-seg-sep">/</span>
-            <input class="date-seg-part date-seg-year" id="edit-seg-aa" maxlength="4" inputmode="numeric" placeholder="AAAA" autocomplete="off" value="${editAa}" />
+            <input class="date-seg-part date-seg-year" id="edit-seg-aa" maxlength="2" inputmode="numeric" placeholder="AA" autocomplete="off" value="${editAa}" />
           </div>
           <input type="hidden" id="edit-fecha" value="${e.fechaVenc||''}" />
         </div>
@@ -1502,7 +1509,7 @@ function editEntry(id) {
       const mm = (document.getElementById('edit-seg-mm')||{}).value||'';
       const aa = (document.getElementById('edit-seg-aa')||{}).value||'';
       const h = document.getElementById('edit-fecha');
-      if (h) h.value = (dd && mm && aa && aa.length===4) ? `${aa}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}` : '';
+      if (h) h.value = (dd && mm && aa && aa.length===2) ? `20${aa}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}` : '';
     }
     function setupSeg(el, maxLen, nextId) {
       if (!el) return;
@@ -1524,7 +1531,7 @@ function editEntry(id) {
     }
     setupSeg(document.getElementById('edit-seg-dd'), 2, 'edit-seg-mm');
     setupSeg(document.getElementById('edit-seg-mm'), 2, 'edit-seg-aa');
-    setupSeg(document.getElementById('edit-seg-aa'), 4, null);
+    setupSeg(document.getElementById('edit-seg-aa'), 2, null);
   })();
 
   // Enter on qty → confirm
@@ -1539,7 +1546,7 @@ function confirmSaveEdit() {
   // Capture all values now, before the modal might be closed
   const tipo       = document.getElementById('edit-tipo') ? document.getElementById('edit-tipo').value : null;
   const subtipo    = tipo==='rotura'   ? (document.getElementById('edit-subtipo') ? document.getElementById('edit-subtipo').value : null) : null;
-  const fechaVenc  = tipo==='unidades' ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
+  const fechaVenc  = (tipo==='unidades'||tipo==='bulto') ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
   const comentario = tipo==='otro'     ? (document.getElementById('edit-comentario') ? document.getElementById('edit-comentario').value.trim() : null) : null;
   const qty        = Math.max(1, parseInt(document.getElementById('edit-qty') ? document.getElementById('edit-qty').value : 1) || 1);
 
@@ -1547,13 +1554,7 @@ function confirmSaveEdit() {
     const dd = (document.getElementById('edit-seg-dd')||{}).value||'';
     const mm = (document.getElementById('edit-seg-mm')||{}).value||'';
     const aa = (document.getElementById('edit-seg-aa')||{}).value||'';
-    if (!dd || !mm || !aa || aa.length < 4) {
-      showToast('Complete la fecha de vencimiento', 'warn');
-      if (!dd && document.getElementById('edit-seg-dd')) document.getElementById('edit-seg-dd').focus();
-      else if (!mm && document.getElementById('edit-seg-mm')) document.getElementById('edit-seg-mm').focus();
-      else if (document.getElementById('edit-seg-aa')) document.getElementById('edit-seg-aa').focus();
-      return;
-    }
+    // Fecha es opcional: si se ingresó parcialmente, completarla solo si está completa
   }
   const tipoLabel  = TIPO_LABEL[tipo] || tipo;
   const e          = entries.find(x => x.id === editingId);
@@ -1572,14 +1573,14 @@ function confirmSaveEdit() {
 function editTipoChange() {
   const tipo = document.getElementById('edit-tipo').value;
   document.getElementById('edit-subtipo-field').style.display    = tipo==='rotura'   ? '' : 'none';
-  document.getElementById('edit-fecha-field').style.display      = tipo==='unidades' ? '' : 'none';
+  document.getElementById('edit-fecha-field').style.display      = (tipo==='unidades'||tipo==='bulto') ? '' : 'none';
   document.getElementById('edit-comentario-field').style.display = tipo==='otro'     ? '' : 'none';
 }
 function saveEdit() {
   const e = entries.find(x => x.id === editingId); if (!e) return;
   const tipo       = document.getElementById('edit-tipo') ? document.getElementById('edit-tipo').value : e.tipo;
   const subtipo    = tipo==='rotura'   ? (document.getElementById('edit-subtipo') ? document.getElementById('edit-subtipo').value : null) : null;
-  const fechaVenc  = tipo==='unidades' ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
+  const fechaVenc  = (tipo==='unidades'||tipo==='bulto') ? (document.getElementById('edit-fecha') ? document.getElementById('edit-fecha').value : null) : null;
   const comentario = tipo==='otro'     ? (document.getElementById('edit-comentario') ? document.getElementById('edit-comentario').value.trim() : null) : null;
   const qty        = Math.max(1, parseInt(document.getElementById('edit-qty') ? document.getElementById('edit-qty').value : e.qty) || 1);
   const newKey = entryKey(e.ref, tipo, subtipo, fechaVenc, comentario);
@@ -1735,6 +1736,14 @@ function doExport() {
     { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
   ]), 'Vencido');
 
+  const bulto = entries.filter(e => e.tipo==='bulto');
+  if (bulto.length) XLSX.utils.book_append_sheet(wb, buildSheet(bulto, [
+    { header:'Referencia',    fn: e => e.ref||'',       w:18 },
+    { header:'Descripción',   fn: e => e.desc||'',      w:38 },
+    { header:'Cantidad',      fn: e => e.qty,  type:'n', w:12 },
+    { header:'Fecha Venc.',   fn: e => formatFechaDisplay(e.fechaVenc)||'', w:14 },
+  ]), 'Bulto');
+
   const otro = entries.filter(e => e.tipo==='otro');
   if (otro.length) XLSX.utils.book_append_sheet(wb, buildSheet(otro, [
     { header:'Referencia',    fn: e => e.ref||'',       w:18 },
@@ -1747,21 +1756,6 @@ function doExport() {
   XLSX.writeFile(wb, name.endsWith('.xlsx') ? name : name + '.xlsx');
   soundExport();
 }
-
-// ═══════════════════════════════════════════════
-//  FULLSCREEN
-// ═══════════════════════════════════════════════
-function toggleFullscreen() {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-  else document.exitFullscreen().catch(()=>{});
-}
-document.addEventListener('fullscreenchange', () => {
-  const enter = document.getElementById('fs-icon-enter');
-  const exit  = document.getElementById('fs-icon-exit');
-  if (!enter||!exit) return;
-  if (document.fullscreenElement) { enter.style.display='none'; exit.style.display=''; }
-  else { enter.style.display=''; exit.style.display='none'; }
-});
 
 // ═══════════════════════════════════════════════
 //  SETTINGS
@@ -1951,6 +1945,14 @@ function toggleScanner() {
 // ═══════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════
+(function initListScroll() {
+  const panel = document.getElementById('list-panel');
+  const title = document.querySelector('.list-title');
+  if (!panel || !title) return;
+  panel.addEventListener('scroll', () => {
+    title.classList.toggle('hidden', panel.scrollTop > 0);
+  });
+})();
 renderList();
 startScanner();
 </script>
