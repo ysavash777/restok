@@ -1,0 +1,34 @@
+{
+  "id": "mqk0u9xtpb7",
+  "name": "Prueba Mapeo",
+  "createdBy": "Joan",
+  "createdAt": "2026-06-18T21:38:06.948Z",
+  "entries": [
+    {
+      "id": "mqli0uh72wy",
+      "ts": "2026-06-19T22:26:53.131Z",
+      "ref": "7790895000997",
+      "dun": "7790895000997:1, 17790895000997:8",
+      "desc": "Coca-Cola Gaseosa Original - Coca-Cola Original - 2250 ml",
+      "tipo": "rotura",
+      "subtipo": "IDL",
+      "fechaVenc": null,
+      "comentario": null,
+      "qty": 1,
+      "user": "Joan"
+    },
+    {
+      "id": "mqli0fc6za2",
+      "ts": "2026-06-19T22:26:33.510Z",
+      "ref": "7790895000997",
+      "dun": "7790895000997:1, 17790895000997:8",
+      "desc": "Coca-Cola Gaseosa Original - Coca-Cola Original - 2250 ml",
+      "tipo": "vencido",
+      "subtipo": null,
+      "fechaVenc": null,
+      "comentario": null,
+      "qty": 1,
+      "user": "Santi"
+    }
+  ]
+}
